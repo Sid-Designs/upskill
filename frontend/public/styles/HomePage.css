@@ -1,0 +1,41 @@
+.firstWord {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.heroTextSec {
+  padding-top: 25vh;
+}
+
+.homeBox {
+  border-radius: 20px;
+  height: 600px;
+  background-color: var(--color-secondary);
+}
+
+.homeCard{
+  border-radius: 20px;
+  width: 27%;
+}
+
+@media screen and (max-width: 878px) {
+  .heroTextSec {
+    padding-top: 20vh;
+  }
+  .homeBox {
+    height: 450px;
+  }
+  .homeCard{
+    width: 70%;
+}
+}
+@media screen and (max-width: 478px) {
+  .heroTextSec {
+    padding-top: 20vh;
+  }
+  .homeBox {
+    height: 300px;
+  }
+}
+
+
