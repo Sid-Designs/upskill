@@ -86,7 +86,7 @@ const legalLinks: FooterLink[] = [
 
 const socialLinks: SocialLink[] = [
   {
-    href: "#",
+    href: "https://github.com/Sid-Designs/upskill",
     "aria-label": "Github",
   },
   {

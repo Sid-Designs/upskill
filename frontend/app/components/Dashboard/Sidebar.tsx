@@ -421,7 +421,7 @@ const Sidebar = ({ selected, onSelect }: SidebarProps) => {
                   className="transition-all duration-300"
                 />
               </div>
-              <div className={`sidebarLabel transition-all duration-100 ${sidebarOpen ? 'opacity-100 w-auto ml-2' : 'opacity-0 w-0'} z-20`}>
+              <div className={`sidebarLabel transition-all ${sidebarOpen ? 'opacity-100 w-auto ml-2 duration-500' : 'opacity-0 w-0 duration-100'} z-20`}>
                 <span className="whitespace-nowrap">{item.label}</span>
               </div>
             </div>
