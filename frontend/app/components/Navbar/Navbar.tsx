@@ -24,59 +24,41 @@ const Navbar = () => {
     setIsMounted(true);
   }, []);
 
-  // Handle scroll animations
   useEffect(() => {
     if (!isMounted) return;
 
     let lastScrollY = window.scrollY;
-    let animationFrameId: number;
 
     const handleScroll = () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY) {
+        gsap.to(".navBar", {
+          position: "fixed",
+          top: "20px",
+          borderRadius: "20px",
+          duration: 0.3,
+          ease: "power4.out",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          padding: isMobile ? "10px 16px" : "15px 20px",
+        });
+      } else if (currentScrollY === 0) {
+        gsap.to(".navBar", {
+          duration: 0.3,
+          ease: "power4.out",
+          top: "0px",
+          borderRadius: "0px 0px 20px 20px",
+          padding: isMobile ? "10px 16px" : "15px 20px",
+        });
       }
 
-      animationFrameId = requestAnimationFrame(() => {
-        const currentScrollY = window.scrollY;
-
-        if (currentScrollY > lastScrollY && currentScrollY > 50) {
-          gsap.to(".navBar", {
-            position: "fixed",
-            top: "20px",
-            borderRadius: "20px",
-            duration: 0.3,
-            ease: "power4.out",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-            padding: isMobile ? "10px 16px" : "15px 20px",
-            width: "calc(100% - 40px)",
-            left: "20px",
-          });
-        } else if (currentScrollY <= 50) {
-          gsap.to(".navBar", {
-            duration: 0.3,
-            ease: "power4.out",
-            top: "0px",
-            borderRadius: "0px 0px 20px 20px",
-            padding: isMobile ? "10px 16px" : "15px 20px",
-            width: "100%",
-            left: "0px",
-          });
-        }
-
-        lastScrollY = currentScrollY;
-      });
+      lastScrollY = currentScrollY;
     };
 
     window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [isMounted, isMobile]);
 
-  // Handle submenu animations
   useEffect(() => {
     if (!isMounted) return;
 
@@ -112,7 +94,7 @@ const Navbar = () => {
     }
   }, [subMenuVisible, isMounted]);
 
-  // Initial animation on mount
+  // GSAP animations - only run on client after mount
   useEffect(() => {
     if (!isMounted || !navBarRef.current) return;
 
@@ -127,7 +109,6 @@ const Navbar = () => {
     );
   }, [isMounted]);
 
-  // Update backbutton position
   const updateBackbuttonPosition = useCallback(
     (element: HTMLElement) => {
       if (
@@ -147,7 +128,6 @@ const Navbar = () => {
           setSubMenuVisible(true);
           return;
         }
-
         gsap.to(backButtonRef.current, {
           left: `${leftPosition}px`,
           width: `${itemRect.width}px`,
@@ -162,7 +142,6 @@ const Navbar = () => {
     [isMounted]
   );
 
-  // Hide backbutton
   const hideBackbutton = useCallback(() => {
     if (!backButtonRef.current || !isMounted) return;
 
@@ -173,7 +152,6 @@ const Navbar = () => {
     });
   }, [isMounted]);
 
-  // Update active link indicator on pathname change
   useEffect(() => {
     if (!isMounted) return;
 
@@ -194,7 +172,6 @@ const Navbar = () => {
     }
   }, [pathname, isMounted, updateBackbuttonPosition, hideBackbutton]);
 
-  // Mouse event handlers
   const handleMouseEnter = useCallback(
     (event: React.MouseEvent<HTMLAnchorElement>) => {
       if (!isMounted) return;
@@ -218,32 +195,6 @@ const Navbar = () => {
       hideBackbutton();
     }
   }, [pathname, isMounted, updateBackbuttonPosition, hideBackbutton]);
-
-  // Handle account menu mouse events
-  const handleAccountMouseEnter = useCallback(() => {
-    if (!isMounted) return;
-    setSubMenuVisible(true);
-  }, [isMounted]);
-
-  const handleAccountMouseLeave = useCallback(() => {
-    if (!isMounted) return;
-    setSubMenuVisible(false);
-  }, [isMounted]);
-
-  // Close submenu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        subMenuVisible &&
-        !(event.target as Element).closest(".account-wrapper")
-      ) {
-        setSubMenuVisible(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [subMenuVisible]);
 
   // Use conditional rendering for initial mount to avoid hydration mismatch
   if (!isMounted) {
@@ -272,7 +223,7 @@ const Navbar = () => {
               <Link
                 key={idx}
                 href={item.href}
-                className={`nav-link w-full h-full center py-2 ${
+                className={`nav-link w-full h-full center py-2${
                   pathname === item.href ? "active" : ""
                 }`}
               >
@@ -315,7 +266,7 @@ const Navbar = () => {
             <Link
               key={idx}
               href={item.href}
-              className={`nav-link w-full h-full center py-2 ${
+              className={`nav-link w-full h-full center py-2${
                 pathname === item.href ? "active" : ""
               }`}
               onMouseEnter={handleMouseEnter}
@@ -323,14 +274,12 @@ const Navbar = () => {
               {item.label}
             </Link>
           ))}
-          
-          {/* Account with dropdown */}
           {navbarItems.slice(-1).map((item, idx) => (
             <div
               key={`account-${idx}`}
-              className="account-wrapper relative"
-              onMouseEnter={handleAccountMouseEnter}
-              onMouseLeave={handleAccountMouseLeave}
+              className="account-wrapper"
+              onMouseEnter={() => setSubMenuVisible(true)}
+              onMouseLeave={() => setSubMenuVisible(false)}
             >
               <Link
                 href={item.href}
@@ -343,27 +292,18 @@ const Navbar = () => {
                 }}
               >
                 {item.label}
-                {"icon" in item && item.icon && (
-                  <item.icon size={16} className="rotateArrow ml-2" />
-                )}
+                <item.icon size={16} className="rotateArrow ml-2" />
               </Link>
-              <div 
-                className="subMenu" 
-                onMouseLeave={() => setSubMenuVisible(false)}
-                style={{ display: "none", opacity: 0 }}
-              >
-                <div className="subMenu-content">
+              <div className="subMenu" onClick={() => setSubMenuVisible(false)}>
+                <div>
                   {accountItems.map((subItem) => (
                     <Link
                       key={subItem.label}
                       href={subItem.href}
-                      className="flex justify-around items-center gap-2 py-2 px-4 hover:bg-gray-100 rounded transition-colors"
-                      onClick={() => setSubMenuVisible(false)}
+                      className="flex justify-around items-center gap-2"
                     >
-                      {"icon" in subItem && subItem.icon && (
-                        <subItem.icon size={16} />
-                      )}
-                      <span>{subItem.label}</span>
+                      <subItem.icon size={16} />
+                      {subItem.label}
                     </Link>
                   ))}
                 </div>
