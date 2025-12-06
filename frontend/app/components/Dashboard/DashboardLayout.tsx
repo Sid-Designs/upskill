@@ -8,7 +8,7 @@ import Workspace from "./Workspace";
 import AITools from "./AITools";
 import { gsap, useGSAP } from "../../lib/gsap";
 
-import "@/public/styles/dashboardLayout.css";
+import "../../../public/styles/dashboardLayout.css";
 
 const DashboardLayout = () => {
   const [activeComponent, setActiveComponent] = useState("Dashboard");

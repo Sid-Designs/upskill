@@ -15,7 +15,7 @@ const Footer = () => {
   const footerRef = useRef<HTMLElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const iconMap: Record<string, JSX.Element> = {
+  const iconMap: { [key: string]: React.ReactNode } = {
     Github: <FaGithub className="w-5 h-5" />,
     Twitter: <FaTwitter className="w-5 h-5" />,
     Facebook: <FaFacebookF className="w-5 h-5" />,

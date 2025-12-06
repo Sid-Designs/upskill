@@ -1,5 +1,5 @@
 import React from "react";
-import "@/public/styles/HomePage.css";
+import "../../../public/styles/HomePage.css";
 import HomeAbout from "./HomeAbout";
 import HeroSection from "./HeroSection";
 import WorkSection from "./WorkSection";

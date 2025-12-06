@@ -91,10 +91,10 @@ const Sidebar = ({ selected, onSelect }: SidebarProps) => {
       // Animate menu items with stagger
       gsap.fromTo('.profileMenuItem',
         { opacity: 0, x: -8 },
-        { 
-          opacity: 1, 
-          x: 0, 
-          duration: 0.15, 
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.15,
           stagger: 0.03,
           delay: 0.1
         }
@@ -122,10 +122,8 @@ const Sidebar = ({ selected, onSelect }: SidebarProps) => {
         );
 
         // Then animate the header
-        gsap.to('.profileMenuHeader',
-          { opacity: 0, y: -5, duration: 0.1 },
-          "-=0.05"
-        );
+        const tlprofile = gsap.timeline();
+        tlprofile.to(".profileMenuHeader", { opacity: 0, y: -5, duration: 0.1 }, "-=0.05");
 
         // Finally animate the entire menu
         profileMenuTimeline.current
@@ -152,7 +150,7 @@ const Sidebar = ({ selected, onSelect }: SidebarProps) => {
     const updatePositions = () => {
       positionsCache.current = [];
       calculateItemPositions();
-      
+
       if (backBtnRef.current && selectedIndex >= 0) {
         const positions = calculateItemPositions();
         if (positions[selectedIndex] !== undefined) {
@@ -174,10 +172,10 @@ const Sidebar = ({ selected, onSelect }: SidebarProps) => {
       if (!backBtnRef.current) return;
 
       gsap.killTweensOf(backBtnRef.current);
-      
+
       const positions = calculateItemPositions();
-      const targetPosition = selectedIndex >= 0 && positions[selectedIndex] !== undefined 
-        ? positions[selectedIndex] 
+      const targetPosition = selectedIndex >= 0 && positions[selectedIndex] !== undefined
+        ? positions[selectedIndex]
         : positions[0] || 0;
 
       gsap.set(backBtnRef.current, {
@@ -226,8 +224,8 @@ const Sidebar = ({ selected, onSelect }: SidebarProps) => {
         gsap.killTweensOf(backBtnRef.current);
 
         const positions = calculateItemPositions();
-        const targetPosition = selectedIndex >= 0 && positions[selectedIndex] !== undefined 
-          ? positions[selectedIndex] 
+        const targetPosition = selectedIndex >= 0 && positions[selectedIndex] !== undefined
+          ? positions[selectedIndex]
           : positions[0] || 0;
 
         gsap.to(backBtnRef.current, {
@@ -258,11 +256,11 @@ const Sidebar = ({ selected, onSelect }: SidebarProps) => {
 
     return () => {
       cleanupFunctions.forEach(cleanup => cleanup());
-      
+
       if (hoverTimeout.current) {
         clearTimeout(hoverTimeout.current);
       }
-      
+
       if (backBtnRef.current) {
         gsap.killTweensOf(backBtnRef.current);
       }
@@ -281,8 +279,8 @@ const Sidebar = ({ selected, onSelect }: SidebarProps) => {
     }
 
     const positions = calculateItemPositions();
-    const targetPosition = selectedIndex >= 0 && positions[selectedIndex] !== undefined 
-      ? positions[selectedIndex] 
+    const targetPosition = selectedIndex >= 0 && positions[selectedIndex] !== undefined
+      ? positions[selectedIndex]
       : positions[0] || 0;
 
     gsap.to(backBtnRef.current, {
@@ -308,7 +306,7 @@ const Sidebar = ({ selected, onSelect }: SidebarProps) => {
         },
         onComplete: () => {
           isAnimating.current = false;
-          
+
           if (backBtnRef.current && selectedIndex >= 0) {
             const positions = calculateItemPositions();
             if (positions[selectedIndex] !== undefined) {
