@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef } from "react";
-import { gsap, ScrollTrigger, useGSAP } from "@/app/lib/gsap";
+import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { UserPlus, Rocket, GraduationCap, Sparkles } from "lucide-react";
 
 const WorkSection = () => {

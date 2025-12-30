@@ -49,6 +49,14 @@ type StatItem = {
   label: string;
 };
 
+type AITool = {
+  icon: string;
+  tool: string;
+  description: string;
+  btnText: string;
+  cmpName: string;
+}
+
 // Account items (for sub-items with icons)
 const accountItems: NavbarItem[] = [
   { label: "Profile", href: "/profile", icon: FiUser },
@@ -60,7 +68,7 @@ const navbarItems: NavbarItem[] = [
   { label: 'Home', href: '/', icon: FiUser },
   { label: 'Services', href: '/#services', icon: FiUser },
   { label: 'About', href: '/#about', icon: FiUser },
-  { label: 'Dashboard', href: '/dashboard', icon: FiUser },
+  { label: 'Dashboard', href: '/dashboard/pannel', icon: FiUser },
   { 
     label: 'Account', 
     href: '#', // Using '#' for dropdown parent items
@@ -133,25 +141,57 @@ const socialLinks: SocialLink[] = [
 const sidebarItems: SidebarItem[] = [
   {
     label: "Dashboard", 
-    cmpName: "Dashboard", 
+    cmpName: "pannel", 
     icon: MdSpaceDashboard
   },
   {
     label: "Workspace", 
-    cmpName: "Workspace", 
+    cmpName: "workspace", 
     icon: BsLaptopFill
   },
   {
     label: "AI Tools", 
-    cmpName: "Tools", 
+    cmpName: "ai-tools", 
     icon: FaTools
   },
   {
     label: "History", 
-    cmpName: "History", 
+    cmpName: "history", 
     icon: FaHistory
   },
 ];
+
+// AI Tools
+const aiTools: AITool[] = [
+  {
+    icon: "https://tse3.mm.bing.net/th/id/OIP.nP7KBnKqHQr845XfZ9cJ7wHaHa?cb=ucfimg2&pid=ImgDet&ucfimg=1&w=184&h=184&c=7&dpr=1.3&o=7&rm=3",
+    tool: "AI Career Advisor",
+    description: "Engage with an intelligent career advisor to receive tailored guidance and instant insights for your professional journey.",
+    btnText: "Start Chat",
+    cmpName: "chatBot"
+  },
+  {
+    icon: "/images/UpSkillLogoIcon.png",
+    tool: "AI Resume Builder",
+    description: "Craft a compelling, industry-standard resume customized to highlight your skills, achievements, and career objectives.",
+    btnText: "Create Resume",
+    cmpName: "resumeBuilder"
+  },
+  {
+    icon: "/images/UpSkillLogoIcon.png",
+    tool: "Career Pathway Generator",
+    description: "Develop a structured career roadmap designed around your strengths, aspirations, and long-term professional goals.",
+    btnText: "Generate Pathway",
+    cmpName: "roadmap"
+  },
+  {
+    icon: "/images/UpSkillLogoIcon.png",
+    tool: "AI Cover Letter Assistant",
+    description: "Produce persuasive, personalized cover letters that effectively showcase your qualifications and align with target roles.",
+    btnText: "Create Letter",
+    cmpName: "coverLetter"
+  }
+]
 
 // HomeAbout Data
 const aiFeatures: AIFeature[] = [
@@ -207,9 +247,10 @@ export {
   legalLinks,
   socialLinks,
   aiFeatures,
+  aiTools,
   stats,
   benefits,
   profileMenuItems
 };
 
-export type { NavbarItem, SidebarItem, FooterLink, SocialLink, AIFeature, StatItem, ProfileMenuItem };
+export type { NavbarItem, SidebarItem, FooterLink, SocialLink, AIFeature, AITool, StatItem, ProfileMenuItem };

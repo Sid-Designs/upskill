@@ -5,7 +5,7 @@ import "../../../public/styles/Navbar.css";
 import { navbarItems, accountItems } from "../../constants";
 import Link from "next/link";
 import Image from "next/image";
-import { gsap } from "../../lib/gsap";
+import { gsap } from "../../../lib/gsap";
 import { usePathname } from "next/navigation";
 import MobileNavIcon from "./MobileNavIcon";
 import { useMediaQuery } from "usehooks-ts";

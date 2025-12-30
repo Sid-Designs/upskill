@@ -141,6 +141,14 @@
   .round{
     border-radius: 20px;
   }
+  textarea{
+    resize: none;
+  }
+}
+
+::selection{
+  background-color: var(--color-primary)!important;
+  color: var(--color-background)!important;
 }
 
 ::-webkit-scrollbar {
@@ -202,4 +210,8 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+img{
+  user-select: none;
 }

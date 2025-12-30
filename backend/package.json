@@ -1,0 +1,38 @@
+{
+  "name": "upskill",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Sid-Designs",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js",
+    "inngest": "inngest dev --no-discovery -u http://localhost:5000/api/inngest --log-level warn",
+    "dev:all": "concurrently -k -n APP,INNGEST -c cyan,magenta \"npm run dev\" \"npm run inngest\""
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.2.1",
+    "express-validator": "^7.3.1",
+    "helmet": "^8.1.0",
+    "inngest": "^3.48.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.0.2",
+    "morgan": "^1.10.1",
+    "nodemailer": "^7.0.12",
+    "openai": "^6.15.0",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "inngest-cli": "^1.15.3",
+    "nodemon": "^3.1.11"
+  }
+}

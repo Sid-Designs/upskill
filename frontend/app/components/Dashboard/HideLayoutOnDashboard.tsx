@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { gsap } from "../../lib/gsap";
+import { gsap } from "../../../lib/gsap";
 
 const HideLayoutOnDashboard = () => {
   useEffect(() => {

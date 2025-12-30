@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { gsap } from "../../lib/gsap";
+import { gsap } from "../../../lib/gsap";
 import { navbarItems, accountItems } from "../../constants";
 import Link from "next/link";
 
