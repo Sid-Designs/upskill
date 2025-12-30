@@ -3,7 +3,11 @@
 import { aiTools } from "@/app/constants";
 import '../../../public/styles/Dashboard.css'
 
-const Dashboard = ({ onChangeComponent }) => {
+type DashboardProps = {
+  onChangeComponent: (componentName: string) => void;
+};
+
+const Dashboard = ({ onChangeComponent }: DashboardProps) => {
   return (
     <div>
       <div className="dashHeader">
