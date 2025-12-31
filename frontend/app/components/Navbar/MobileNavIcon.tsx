@@ -2,10 +2,15 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { gsap } from "../../../lib/gsap";
-import { navbarItems, accountItems } from "../../constants";
+import { navbarItems, accountItems as accountItemsConst } from "../../constants";
 import Link from "next/link";
 
-const MobileNavIcon = () => {
+type MobileNavIconProps = {
+  isAuthenticated: boolean;
+  accountMenuItems: typeof accountItemsConst;
+};
+
+const MobileNavIcon = ({ isAuthenticated, accountMenuItems }: MobileNavIconProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const topLineRef = useRef(null);
   const middleLineRef = useRef(null);
@@ -146,7 +151,7 @@ const MobileNavIcon = () => {
           <div className="nav-section">
             <h3 className="nav-section-title">Account</h3>
             <div className="account-links">
-              {accountItems.map((subItem, idx) => (
+              {accountMenuItems.map((subItem, idx) => (
                 <Link
                   key={idx}
                   href={subItem.href}
@@ -160,6 +165,26 @@ const MobileNavIcon = () => {
                 </Link>
               ))}
             </div>
+            {!isAuthenticated && (
+              <div className="mt-3 space-y-2">
+                <Link
+                  href="/auth/login"
+                  onClick={handleLinkClick}
+                  className="account-link-item">
+                  <div className="account-link-content">
+                    <span className="account-link-text">Login</span>
+                  </div>
+                </Link>
+                <Link
+                  href="/auth/signup"
+                  onClick={handleLinkClick}
+                  className="account-link-item">
+                  <div className="account-link-content">
+                    <span className="account-link-text">Sign Up</span>
+                  </div>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>

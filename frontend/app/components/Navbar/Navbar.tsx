@@ -243,7 +243,7 @@ const Navbar = () => {
             />
           </div>
           <div className="mobNavIcon">
-            <MobileNavIcon />
+            <MobileNavIcon isAuthenticated={isAuthenticated} accountMenuItems={accountMenuItems} />
           </div>
           <div className="navItem relative" ref={navContainerRef}>
             {/* Static navbar items for SSR */}
@@ -282,7 +282,7 @@ const Navbar = () => {
           />
         </div>
         <div className="mobNavIcon">
-          <MobileNavIcon />
+          <MobileNavIcon isAuthenticated={isAuthenticated} accountMenuItems={accountMenuItems} />
         </div>
         <div
           className="navItem relative"
