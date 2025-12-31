@@ -23,7 +23,8 @@ app.use(
     origin: [
       "http://localhost:3000", 
       "https://upskill-frontend.vercel.app", 
-      "https://apiupskill.vercel.app"
+      "https://apiupskill.vercel.app",
+      "https://upskill.siddheshdev.com"
     ],
     credentials: true, 
   })
