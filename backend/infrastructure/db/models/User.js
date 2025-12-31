@@ -25,8 +25,8 @@ const userSchema = Schema(
     },
     status: {
       type: String,
-      enum: ["active", "blocked"],
-      default: "active",
+      enum: ["pending","active", "blocked"],
+      default: "pending",
     },
     isVerified: { type: Boolean, default: false },
     verificationToken: { type: String, default: null },

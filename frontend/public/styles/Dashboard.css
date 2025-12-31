@@ -42,11 +42,11 @@
 
 
 
-.dashTiles .btn {
+.dashTiles .button {
   width: 100%;
 }
 
-.dashTiles .btn button {
+.dashTiles .button button {
   width: 95%;
   text-align: center;
   background-color: var(--color-primary);
@@ -57,7 +57,7 @@
   transition: all 0.25s ease-in-out;
 }
 
-.dashTiles .btn button:hover {
+.dashTiles .button button:hover {
   scale: 1.025;
 }
 
@@ -68,4 +68,13 @@
   .dashTiles .toolTile .icon{
     margin-right: 15px;
   }
+}
+
+.footBody div{
+  transition: all 0.25s ease-in-out;
+  border-radius: 14px;
+}
+
+.footBody div:hover{
+  background-color: #e5e6e7;
 }

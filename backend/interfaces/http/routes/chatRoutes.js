@@ -57,12 +57,14 @@ router.get(
   asyncHandler(ChatController.getCoverLetterById)
 );
 
-
 // Delete Cover Letter by ID
 router.delete(
   "/cover-letter/:coverLetterId",
   authenticateJWT,
   asyncHandler(ChatController.deleteCoverLetterById)
 );
+
+// Get All Cover Letters for User
+router.get("/cover-letters", authenticateJWT, asyncHandler(ChatController.getAllCoverLetters));
 
 module.exports = router;

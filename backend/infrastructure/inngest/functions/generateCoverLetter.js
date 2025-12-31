@@ -1,9 +1,7 @@
 const inngest = require("../client");
 
-const CoverLetterRepositoryImpl =
-  require("../../repositories/CoverLetterRepositoryImpl");
-const ProfileRepositoryImpl =
-  require("../../repositories/ProfileRepositoryImpl");
+const CoverLetterRepositoryImpl = require("../../repositories/CoverLetterRepositoryImpl");
+const ProfileRepositoryImpl = require("../../repositories/ProfileRepositoryImpl");
 
 const {
   buildCoverLetterPrompt,
@@ -13,11 +11,12 @@ const {
   getAIProvider,
 } = require("../../../application/ai/providers/ProviderFactory");
 
-const { getCreditCost } =
-  require("../../../application/ai/pricing");
+const { getCreditCost } = require("../../../application/ai/pricing");
 
 const coverLetterRepo = new CoverLetterRepositoryImpl();
 const profileRepo = new ProfileRepositoryImpl();
+
+const sseManager = require("../../sse/SseConnectionManager");
 
 module.exports = inngest.createFunction(
   {
@@ -30,7 +29,6 @@ module.exports = inngest.createFunction(
 
   async ({ event }) => {
     const { coverLetterId, userId } = event.data;
-
 
     /* 1️⃣ Load cover letter */
     const coverLetter = await coverLetterRepo.findById(coverLetterId);
@@ -56,6 +54,10 @@ module.exports = inngest.createFunction(
       coverLetter.generatedText =
         "You do not have enough credits to generate a cover letter.";
       await coverLetterRepo.update(coverLetter);
+      sseManager.notify(coverLetterId, "failed", {
+        reason: "insufficient_credits",
+        coverLetterId,
+      });
       return;
     }
 
@@ -71,11 +73,6 @@ module.exports = inngest.createFunction(
     const provider = getAIProvider("cover_letter");
     const aiResult = await provider.generate(prompt);
 
-    console.log("[Inngest] AI cover letter generated", {
-      coverLetterId,
-      provider: aiResult.provider,
-    });
-
     /* 6️⃣ Save AI result */
     coverLetter.complete(aiResult.text, aiResult.provider);
     await coverLetterRepo.update(coverLetter);
@@ -84,5 +81,10 @@ module.exports = inngest.createFunction(
     await profileRepo.deductCredits(userId, cost);
 
     console.log("[Inngest] Cover letter generated & credits deducted");
+
+    sseManager.notify(coverLetterId, "completed", {
+      message: "cover_letter_completed",
+      coverLetterId,
+    });
   }
 );

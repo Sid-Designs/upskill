@@ -1,7 +1,23 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '5000'
+      },
+      {
+        protocol: 'https',
+        hostname: 'th.bing.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'tse4.mm.bing.net'
+      }
+    ]
+  }
 };
 
 export default nextConfig;

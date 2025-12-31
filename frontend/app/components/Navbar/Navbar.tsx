@@ -2,10 +2,11 @@
 
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import "../../../public/styles/Navbar.css";
-import { navbarItems, accountItems } from "../../constants";
+import { navbarItems, accountItems, guestAccountItems } from "../../constants";
 import Link from "next/link";
 import Image from "next/image";
 import { gsap } from "../../../lib/gsap";
+import api from "../../../lib/api";
 import { usePathname } from "next/navigation";
 import MobileNavIcon from "./MobileNavIcon";
 import { useMediaQuery } from "usehooks-ts";
@@ -17,12 +18,39 @@ const Navbar = () => {
   const navContainerRef = useRef<HTMLDivElement>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [subMenuVisible, setSubMenuVisible] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const isMobile = useMediaQuery("(max-width: 878px)");
+  const accountMenuItems = isAuthenticated ? accountItems : guestAccountItems;
 
   // Set mounted state after hydration
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+
+    let isActive = true;
+
+    const checkAuthentication = async () => {
+      try {
+        await api.get("/api/user/me");
+        if (isActive) {
+          setIsAuthenticated(true);
+        }
+      } catch {
+        if (isActive) {
+          setIsAuthenticated(false);
+        }
+      }
+    };
+
+    checkAuthentication();
+
+    return () => {
+      isActive = false;
+    };
+  }, [isMounted]);
 
   useEffect(() => {
     if (!isMounted) return;
@@ -223,9 +251,8 @@ const Navbar = () => {
               <Link
                 key={idx}
                 href={item.href}
-                className={`nav-link w-full h-full center py-2${
-                  pathname === item.href ? "active" : ""
-                }`}
+                className={`nav-link w-full h-full center py-2${pathname === item.href ? "active" : ""
+                  }`}
               >
                 {item.label}
               </Link>
@@ -266,9 +293,8 @@ const Navbar = () => {
             <Link
               key={idx}
               href={item.href}
-              className={`nav-link w-full h-full center py-2${
-                pathname === item.href ? "active" : ""
-              }`}
+              className={`nav-link w-full h-full center py-2${pathname === item.href ? "active" : ""
+                }`}
               onMouseEnter={handleMouseEnter}
             >
               {item.label}
@@ -283,9 +309,8 @@ const Navbar = () => {
             >
               <Link
                 href={item.href}
-                className={`nav-link w-full h-full center py-2 lastItem ${
-                  pathname === item.href ? "active" : ""
-                }`}
+                className={`nav-link w-full h-full center py-2 lastItem ${pathname === item.href ? "active" : ""
+                  }`}
                 onClick={(e) => {
                   e.preventDefault();
                   setSubMenuVisible((prev) => !prev);
@@ -296,16 +321,30 @@ const Navbar = () => {
               </Link>
               <div className="subMenu" onClick={() => setSubMenuVisible(false)}>
                 <div>
-                  {accountItems.map((subItem) => (
-                    <Link
-                      key={subItem.label}
-                      href={subItem.href}
-                      className="flex justify-around items-center gap-2"
-                    >
-                      <subItem.icon size={16} />
-                      {subItem.label}
-                    </Link>
-                  ))}
+                  {isAuthenticated ?
+                    (accountMenuItems.map((subItem) => (
+
+                      <Link
+                        key={subItem.label}
+                        href={subItem.href}
+                        className="flex justify-around items-center gap-2"
+                      >
+                        <subItem.icon size={16} />
+                        {subItem.label}
+                      </Link>
+                    )))
+                    :
+                    (guestAccountItems.map((subItem) => (
+                      <Link
+                        key={subItem.label}
+                        href={subItem.href}
+                        className="flex justify-around items-center gap-2"
+                      >
+                        <subItem.icon size={16} />
+                        {subItem.label}
+                      </Link>
+                    )))
+                  }
                 </div>
               </div>
             </div>

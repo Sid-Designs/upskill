@@ -10,6 +10,8 @@ import AITools from "./AITools";
 import { gsap, useGSAP } from "../../../lib/gsap";
 import "../../../public/styles/dashboardLayout.css";
 import ChatBot from "../Tools/ChatBot";
+import History from "../Tools/History";
+import CoverLetter from "../Tools/CoverLetter";
 
 // Define valid routes
 const validRoutes = [
@@ -116,7 +118,7 @@ const DashboardLayout = () => {
       case "ai-tools":
         return <AITools />;
       case "history":
-        return <div>History Component</div>;
+        return <History />;
       case "chatbot":
         return <ChatBot />
       case "resume-builder":
@@ -124,7 +126,7 @@ const DashboardLayout = () => {
       case "roadmap":
         return <div>Roadmap</div>;
       case "cover-letter":
-        return <div>Cover Letter</div>;
+        return <CoverLetter />;
       default:
         return <Dashboard onChangeComponent={handleDashboardTileClick} />;
     }

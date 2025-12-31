@@ -18,8 +18,18 @@ const app = express();
 connectDB();
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000", 
+      "https://upskill-frontend.vercel.app", 
+      "https://apiupskill.vercel.app"
+    ],
+    credentials: true, 
+  })
+);
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
   morgan("dev", {
@@ -28,26 +38,34 @@ app.use(
 );
 
 // Inngest Server
-app.use("/api/inngest", (req, res, next) => {
-  if (!inngestStarted) {
-    console.log("✅ Inngest server is started");
-    inngestStarted = true;
-  }
-  next();
-}, inngestHandler);
+app.use(
+  "/api/inngest",
+  (req, res, next) => {
+    if (!inngestStarted) {
+      console.log("✅ Inngest server is started");
+      inngestStarted = true;
+    }
+    next();
+  },
+  inngestHandler
+);
 
 // Routes
 const userRoutes = require("./interfaces/http/routes/userRoutes");
 const authRoutes = require("./interfaces/http/routes/authRoutes");
 const chatRoutes = require("./interfaces/http/routes/chatRoutes");
 const profileRoutes = require("./interfaces/http/routes/profileRoutes");
+const chatStreamRoutes = require("./interfaces/http/routes/chatStreamRoutes");
+const coverLetterStreamRoutes = require("./interfaces/http/routes/coverLetterStreamRoutes");
 
 app.use("/api/user", userRoutes);
 app.use("/api/user", authRoutes);
 app.use("/api/profile", profileRoutes);
-app.use("/api/chat", chatRoutes)
+app.use("/api/chat", chatRoutes);
+app.use(chatStreamRoutes);
+app.use(coverLetterStreamRoutes);
 app.use((err, req, res, next) => {
-  res.status(400).json({ error: err.message });
+  res.json({ error: err.message });
 });
 
 // Server

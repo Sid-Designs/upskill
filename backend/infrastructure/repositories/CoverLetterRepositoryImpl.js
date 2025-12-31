@@ -37,6 +37,10 @@ class CoverLetterRepositoryImpl {
     return true;
   }
 
+  async findAllByUserId(userId) {
+    return await CoverLetterModel.find({ userId }).sort({ createdAt: -1 });
+  }
+
   _toDomain(doc) {
     return new CoverLetter({
       id: doc._id.toString(),

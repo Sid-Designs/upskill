@@ -2,7 +2,7 @@ const transporter = require("../mailer/transporter");
 const sendEmailFromTemplate = require("./SendEmail");
 
 const sendResetPasswordEmail = async (email, token) => {
-  const resetLink = `${process.env.APP_URI}/api/user/reset-password?token=${token}`;
+  const resetLink = `${process.env.APP_URI}/auth/reset-password?token=${token}`;
 
   try {
     await sendEmailFromTemplate({

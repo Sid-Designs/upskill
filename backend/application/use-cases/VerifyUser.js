@@ -1,5 +1,6 @@
 const UserRepositoryImpl = require("../../infrastructure/repositories/UserRepositoryImpl");
 const { verifyToken } = require("../../infrastructure/security/jwtUtils");
+const { generateToken } = require("../../infrastructure/security/jwtUtils");
 
 class VerifyUser {
   constructor() {
@@ -18,8 +19,21 @@ class VerifyUser {
     user.verify(token);
 
     await this.userRepository.save(user);
+    console.log("User verified:", user.id);
 
-    return { success: true, message: "Email verified successfully" };
+    // Generate JWT with user payload
+    const newToken = generateToken({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      status: user.status,
+    });
+
+    return {
+      success: true,
+      message: "Email verified successfully",
+      token: newToken,
+    };
   }
 }
 

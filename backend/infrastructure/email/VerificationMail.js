@@ -3,7 +3,7 @@ const sendEmailFromTemplate = require("./SendEmail");
 const sendVerificationEmail = async (email, token) => {
   const verifyLink = `${
     process.env.APP_URI
-  }/api/user/verify-email?token=${encodeURIComponent(token)}`;
+  }/auth/verify-email?token=${encodeURIComponent(token)}`;
 
   try {
     const info = await sendEmailFromTemplate({

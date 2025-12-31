@@ -215,3 +215,28 @@
 img{
   user-select: none;
 }
+
+.btn{
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 1.05rem;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn:hover{
+  box-shadow: none;
+}
+
+.input{
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}

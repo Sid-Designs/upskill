@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { sidebarItems } from '@/app/constants'
 import { gsap, useGSAP } from '@/lib/gsap';
 import { profileMenuItems } from '@/app/constants';
+import api from '@/lib/api';
 
 interface SidebarProps {
   selected: string;
@@ -36,12 +37,35 @@ const labelToSlugMap: Record<string, string> = {
 };
 
 const Sidebar = ({ selected, onSelect }: SidebarProps) => {
+  type UserProfile = {
+    username: string;
+    email: string;
+    role?: string;
+  };
+
+  const decodeMaybeBase64Email = (value: string) => {
+    if (!value) return '';
+
+    // Try base64 decode; if it looks invalid or lacks '@', fall back to the original value
+    try {
+      const decoded = typeof atob === 'function' ? atob(value) : Buffer.from(value, 'base64').toString('utf-8');
+      if (decoded.includes('@')) {
+        return decoded;
+      }
+    } catch {
+      /* ignore decode errors */
+    }
+
+    return value;
+  };
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const [currentHoverY, setCurrentHoverY] = useState<number>(0);
   const [isInitialized, setIsInitialized] = useState(false);
   const [showLabels, setShowLabels] = useState(false);
+  const [userProfile, setUserProfile] = useState<UserProfile>({ username: 'User', email: '' });
   const sidebarRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<HTMLDivElement[]>([]);
   const backBtnRef = useRef<HTMLDivElement>(null);
@@ -64,6 +88,36 @@ const Sidebar = ({ selected, onSelect }: SidebarProps) => {
   // Convert selected slug to label for sidebar highlighting
   const selectedLabel = slugToLabelMap[selected] || 'Dashboard';
   const selectedIndex = sidebarItems.findIndex(item => item.label === selectedLabel);
+  const profileMenuList = profileMenuItems.map(item =>
+    item.label === 'Logout'
+      ? { ...item, href: '/auth/logout' }
+      : item
+  );
+
+  // Fetch the authenticated user's profile once
+  useEffect(() => {
+    let active = true;
+    const fetchUser = async () => {
+      try {
+        const response = await api.get('/api/user/me');
+        const data = response.data || {};
+        const user = data.user || data;
+        if (!active) return;
+        setUserProfile({
+          username: (user.username || user.role || 'User').trim(),
+          email: decodeMaybeBase64Email((user.email || '').trim()),
+          role: user.role
+        });
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+
+    void fetchUser();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // Calculate item positions
   const calculateItemPositions = () => {
@@ -536,6 +590,11 @@ const Sidebar = ({ selected, onSelect }: SidebarProps) => {
     return email.substring(0, maxLength - 3) + '...';
   };
 
+  const formatDisplayName = (name: string) => {
+    if (!name) return 'User';
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  };
+
   const handleProfileClick = () => {
     setProfileMenuOpen(!profileMenuOpen);
   };
@@ -638,20 +697,20 @@ const Sidebar = ({ selected, onSelect }: SidebarProps) => {
             </div>
             <div className="flex flex-col min-w-0 overflow-hidden transition-all duration-300">
               <div className='font-medium text-sm text-gray-900 whitespace-nowrap truncate flex items-center gap-2'>
-                Siddhesh Mhaskar
+                {formatDisplayName(userProfile.username || 'User')}
               </div>
               <div
                 ref={profileEmailRef}
                 className='text-xs text-gray-500 mt-0.5'
-                title="Siddheshmhaskar05@gmail.com"
+                title={userProfile.email || 'Email not available'}
               >
                 <span className="whitespace-nowrap truncate block lowercase">
-                  {truncateEmail("Siddheshmhaskar05@gmail.com", 20)}
+                  {truncateEmail(userProfile.email || 'Email not available', 20)}
                 </span>
               </div>
             </div>
           </div>
-          {profileMenuItems.map((item, index) => (
+          {profileMenuList.map((item, index) => (
             <a
               key={index}
               href={item.href || '#'}
@@ -699,7 +758,7 @@ const Sidebar = ({ selected, onSelect }: SidebarProps) => {
           {sidebarOpen && (
             <div className="flex flex-col min-w-0 overflow-hidden transition-all duration-300">
               <div className='font-medium text-sm text-gray-900 whitespace-nowrap truncate flex items-center gap-2'>
-                Siddhesh Mhaskar
+                {formatDisplayName(userProfile.username || 'User')}
                 <svg
                   className={`w-4 h-4 transition-transform duration-200 ${profileMenuOpen ? 'rotate-180' : ''}`}
                   fill="none"
@@ -712,10 +771,10 @@ const Sidebar = ({ selected, onSelect }: SidebarProps) => {
               <div
                 ref={profileEmailRef}
                 className='text-xs text-gray-500 mt-0.5'
-                title="Siddheshmhaskar05@gmail.com"
+                title={userProfile.email || 'Email not available'}
               >
                 <span className="whitespace-nowrap truncate block lowercase">
-                  {truncateEmail("Siddheshmhaskar05@gmail.com", sidebarOpen ? 20 : 10)}
+                  {truncateEmail(userProfile.email || 'Email not available', sidebarOpen ? 20 : 10)}
                 </span>
               </div>
             </div>

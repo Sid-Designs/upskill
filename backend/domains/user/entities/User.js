@@ -21,7 +21,7 @@ class User {
     this.email = email;
     this.password = password;
     this.role = role || "user";
-    this.status = status || "active";
+    this.status = status || "pending";
     this.isVerified = isVerified || false;
     this.verificationToken = verificationToken;
     this.verificationTokenExpiresAt = verificationTokenExpiresAt;
@@ -77,6 +77,7 @@ class User {
       throw new BadRequestError("Token has expired");
     }
     this.isVerified = true;
+    this.status = "active";
     this.verificationToken = null;
     this.verificationTokenExpiresAt = null;
   }

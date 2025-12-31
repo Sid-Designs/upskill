@@ -1,5 +1,5 @@
 import { IconType } from "react-icons";
-import { FiUser } from "react-icons/fi";
+import { FiUser, FiLogIn, FiUserPlus } from "react-icons/fi";
 import { IoSettingsOutline } from "react-icons/io5";
 import { FaArrowUp } from "react-icons/fa";
 import { BsLaptopFill } from "react-icons/bs";
@@ -58,6 +58,11 @@ type AITool = {
 }
 
 // Account items (for sub-items with icons)
+const guestAccountItems: NavbarItem[] = [
+  { label: "Sign Up", href: "/auth/signup", icon: FiUserPlus },
+  { label: "Login", href: "/auth/login", icon: FiLogIn },
+];
+
 const accountItems: NavbarItem[] = [
   { label: "Profile", href: "/profile", icon: FiUser },
   { label: "Settings", href: "/settings", icon: IoSettingsOutline },
@@ -172,10 +177,10 @@ const aiTools: AITool[] = [
   },
   {
     icon: "/images/UpSkillLogoIcon.png",
-    tool: "AI Resume Builder",
-    description: "Craft a compelling, industry-standard resume customized to highlight your skills, achievements, and career objectives.",
-    btnText: "Create Resume",
-    cmpName: "resumeBuilder"
+    tool: "AI Cover Letter",
+    description: "Craft customized cover letters that highlight your strengths and align with specific job roles using advanced AI technology.",
+    btnText: "Generate Letter",
+    cmpName: "coverLetter"
   },
   {
     icon: "/images/UpSkillLogoIcon.png",
@@ -241,6 +246,7 @@ const benefits: string[] = [
 export {
   navbarItems,
   accountItems,
+  guestAccountItems,
   sidebarItems,
   footerTagline,
   websiteLinks,

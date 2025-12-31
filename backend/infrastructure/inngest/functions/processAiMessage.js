@@ -10,6 +10,8 @@ const {
   getAIProvider,
 } = require("../../../application/ai/providers/ProviderFactory");
 
+const sseManager = require("../../sse/SseConnectionManager");
+
 const chatSessionRepo = new ChatSessionRepositoryImpl();
 const chatMessageRepo = new ChatMessageRepositoryImpl();
 const profileRepo = new ProfileRepositoryImpl();
@@ -53,6 +55,10 @@ module.exports = inngest.createFunction(
         content: "Insufficient credits",
         status: "failed",
       });
+      sseManager.notify(chatSessionId, "failed", {
+        reason: "insufficient_credits",
+        chatSessionId,
+      });
       return;
     }
 
@@ -70,6 +76,10 @@ module.exports = inngest.createFunction(
 
     /* 9️⃣ Deduct credits */
     await profileRepo.deductCredits(userId, cost);
+
+    sseManager.notify(chatSessionId, "completed", {
+      message: "assistant_completed",
+    });
 
     console.log("[Inngest] AI response generated & credits deducted");
   }

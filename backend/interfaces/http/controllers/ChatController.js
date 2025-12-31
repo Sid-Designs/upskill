@@ -5,6 +5,7 @@ const GetUserChatSessions = require("../../../application/use-cases/chat/GetUser
 const GetChatMessages = require("../../../application/use-cases/chat/GetChatMessages");
 const GetCoverLetter = require("../../../application/use-cases/chat/GetCoverLetter");
 const DeleteCoverLetter = require("../../../application/use-cases/chat/DeleteCoverLetter");
+const GetUserCoverLetters = require("../../../application/use-cases/chat/GetUserCoverLetter");
 
 const ChatSessionRepositoryImpl = require("../../../infrastructure/repositories/ChatSessionRepositoryImpl");
 const ChatMessageRepositoryImpl = require("../../../infrastructure/repositories/ChatMessageRepositoryImpl");
@@ -181,6 +182,21 @@ const deleteCoverLetterById = async (req, res) => {
   });
 };
 
+const getAllCoverLetters = async (req, res) => {
+  const userId = req.user.id; // from auth middleware
+
+  const useCase = new GetUserCoverLetters({
+    coverLetterRepository: new CoverLetterRepositoryImpl(),
+  });
+
+  const coverLetters = await useCase.execute(userId);
+
+  return res.status(200).json({
+    success: true,
+    data: coverLetters,
+  });
+};
+
 module.exports = {
   createSession,
   sendMessage,
@@ -190,4 +206,5 @@ module.exports = {
   generateCoverLetter,
   getCoverLetterById,
   deleteCoverLetterById,
+  getAllCoverLetters,
 };

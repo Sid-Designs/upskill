@@ -1,16 +1,16 @@
 const jwt = require("jsonwebtoken");
 
 function authenticateJWT(req, res, next) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).json({ error: "Missing token" });
-  }
+  // 🔑 READ TOKEN FROM COOKIE (NOT HEADER)
+  const token = req.cookies?.access_token;
 
-  const token = authHeader.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
 
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
-      return res.status(403).json({ error: "Invalid token" });
+      return res.status(401).json({ error: "Invalid or expired token" });
     }
 
     // ✅ Normalize user identity
@@ -18,9 +18,9 @@ function authenticateJWT(req, res, next) {
       id: decoded.id || decoded.userId || decoded._id,
       email: decoded.email,
       role: decoded.role,
+      status: decoded.status,
     };
 
-    // ✅ Correct validation
     if (!req.user.id) {
       return res.status(401).json({ error: "Invalid token payload" });
     }

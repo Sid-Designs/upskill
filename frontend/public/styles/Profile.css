@@ -1,0 +1,61 @@
+.profileCard{
+    width: 80%; height: 70%;
+    min-height: 75vh;
+    border-radius: 20px;
+    margin-top: 7vh;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    border: 1px solid #e7e7e7;
+}
+
+.profileIcon{
+    background-color: red;
+    height: 100px; width: 100px;
+    border-radius: 100%;
+}
+
+.pHeader{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Profile.css */
+.profileCard {
+  transition: all 0.3s ease;
+}
+
+.profileCard:hover {
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* Smooth transitions for interactive elements */
+button, input, textarea {
+  transition: all 0.2s ease;
+}
+
+/* Focus styles */
+input:focus, textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .profileCard {
+    margin: 1rem;
+  }
+}
+
+/* Loading state animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loading {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}   
