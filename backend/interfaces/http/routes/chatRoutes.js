@@ -10,35 +10,30 @@ const rateLimiter = require("../../../interfaces/middleware/rateLimiter");
 
 router.post(
   "/create-session",
-  rateLimiter({ windowMs: 15 * 60 * 1000, max: 20 }),
   authenticateJWT,
   asyncHandler(ChatController.createSession)
 );
 
 router.post(
   "/send-message",
-  rateLimiter({ windowMs: 15 * 60 * 1000, max: 30 }),
   authenticateJWT,
   asyncHandler(ChatController.sendMessage)
 );
 
 router.get(
   "/session",
-  rateLimiter({ windowMs: 15 * 60 * 1000, max: 50 }),
   authenticateJWT,
   asyncHandler(ChatController.getSessions)
 );
 
 router.get(
   "/session/:chatSessionId/messages",
-  rateLimiter({ windowMs: 15 * 60 * 1000, max: 50 }),
   authenticateJWT,
   asyncHandler(ChatController.getMessages)
 );
 
 router.delete(
   "/session/:chatSessionId",
-  rateLimiter({ windowMs: 15 * 60 * 1000, max: 100 }),
   authenticateJWT,
   asyncHandler(ChatController.deleteChatSession)
 );
