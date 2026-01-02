@@ -36,7 +36,7 @@ const SignupPage = () => {
       }
 
       setSuccessMessage('Account created. Redirecting to login...')
-      setTimeout(() => router.push('/auth/login'), 2000)
+      setTimeout(() => router.push('/auth/verify-email'), 2000)
     } catch (error) {
       const err: any = error
       const message = err?.response?.data?.error || err?.message || 'Unable to sign up'

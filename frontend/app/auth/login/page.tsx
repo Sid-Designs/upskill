@@ -36,7 +36,7 @@ const LoginPage = () => {
       }
 
       setSuccessMessage('Logged in successfully! Redirecting…')
-      setTimeout(() => window.location.href = '/', 1500)
+      setTimeout(() => window.location.href = '/dashboard/pannel', 2000)
     } catch (error) {
       const err: any = error
       const message = err?.response?.data?.error || err?.message || 'Unable to log in'
