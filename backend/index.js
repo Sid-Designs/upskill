@@ -25,7 +25,8 @@ app.use(
       "http://localhost:3000", 
       "https://upskill-frontend.vercel.app", 
       "https://apiupskill.vercel.app",
-      "https://upskill.siddheshdev.com"
+      "https://upskill.siddheshdev.com",
+      "https://upskillai.vercel.app"
     ],
     credentials: true, 
   })
