@@ -77,7 +77,7 @@ app.listen(PORT, () => {
   console.log(`✅ Server is started on ${PORT}`);
 });
 
-// Home Page
+// API Home Page
 app.get("/", (req, res) => {
   res.send("UpSkill AI Powered Career Assistant Backend Page");
 });
