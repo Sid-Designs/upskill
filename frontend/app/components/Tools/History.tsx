@@ -4,16 +4,16 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import api from '@/lib/api'
 import { gsap, useGSAP } from '@/lib/gsap'
-import { 
-  Search, 
-  Filter, 
-  Calendar, 
-  MessageSquare, 
-  Clock, 
-  ChevronRight, 
-  RefreshCw, 
-  Sparkles, 
-  ChevronLeft, 
+import {
+  Search,
+  Filter,
+  Calendar,
+  MessageSquare,
+  Clock,
+  ChevronRight,
+  RefreshCw,
+  Sparkles,
+  ChevronLeft,
   ChevronRight as RightIcon,
   ChevronsLeft,
   ChevronsRight,
@@ -83,18 +83,18 @@ const History: React.FC = () => {
   // GSAP fade animations
   useGSAP(() => {
     if (!containerRef.current) return
-    
+
     const ctx = gsap.context(() => {
-      gsap.fromTo(".history-hero", 
-        { opacity: 0 }, 
+      gsap.fromTo(".history-hero",
+        { opacity: 0 },
         { opacity: 1, duration: 0.4 }
       )
-      gsap.fromTo(".history-stats", 
-        { opacity: 0 }, 
+      gsap.fromTo(".history-stats",
+        { opacity: 0 },
         { opacity: 1, duration: 0.4, stagger: 0.06, delay: 0.1 }
       )
-      gsap.fromTo(".history-content", 
-        { opacity: 0 }, 
+      gsap.fromTo(".history-content",
+        { opacity: 0 },
         { opacity: 1, duration: 0.4, delay: 0.2 }
       )
     }, containerRef)
@@ -141,16 +141,16 @@ const History: React.FC = () => {
     try {
       const cached = sessionStorage.getItem(HISTORY_CACHE_KEY)
       if (!cached) return null
-      
+
       const data: CachedHistory = JSON.parse(cached)
       const isExpired = Date.now() - data.timestamp > CACHE_DURATION
       const isSameUser = data.userId === currentUserId
-      
+
       if (isExpired || !isSameUser) {
         sessionStorage.removeItem(HISTORY_CACHE_KEY)
         return null
       }
-      
+
       return data
     } catch {
       sessionStorage.removeItem(HISTORY_CACHE_KEY)
@@ -195,7 +195,7 @@ const History: React.FC = () => {
     setLoading(true)
     setError(null)
     setIsFromCache(false)
-    
+
     try {
       const response = await api.get<ChatSessionsResponse>('/api/chat/session')
       const payload = response.data
@@ -203,7 +203,7 @@ const History: React.FC = () => {
         setSessions(payload.data)
         setCurrentPage(1)
         setLastUpdated(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }))
-        
+
         // Save to cache
         if (userId) {
           setCachedHistory(payload.data, userId)
@@ -313,10 +313,10 @@ const History: React.FC = () => {
     if (!sessionToDelete) return
 
     setDeletingSessionId(sessionToDelete.id)
-    
+
     try {
       const response = await api.delete(`/api/chat/session/${sessionToDelete.id}`)
-      
+
       if (response.data?.success) {
         setSessions(prev => prev.filter(session => session.id !== sessionToDelete.id))
         // Clear cache when session is deleted
@@ -355,7 +355,7 @@ const History: React.FC = () => {
       filtered = filtered.filter(session => session.type === filterType)
     }
 
-    return filtered.sort((a, b) => 
+    return filtered.sort((a, b) =>
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     )
   }, [sessions, searchQuery, filterType])
@@ -370,7 +370,7 @@ const History: React.FC = () => {
       const date = new Date(session.createdAt)
       const now = new Date()
       const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24))
-      
+
       let dateLabel: string
       if (diffDays === 0) {
         dateLabel = 'Today'
@@ -406,7 +406,7 @@ const History: React.FC = () => {
   const pageNumbers = useMemo(() => {
     const delta = 2
     const range: (number | string)[] = []
-    
+
     for (let i = 1; i <= totalPages; i++) {
       if (
         i === 1 ||
@@ -421,7 +421,7 @@ const History: React.FC = () => {
         range.push('...')
       }
     }
-    
+
     return range.filter((item, index, arr) => {
       if (item === '...' && arr[index - 1] === '...') return false
       return true
@@ -448,7 +448,7 @@ const History: React.FC = () => {
   }
 
   const formatType = (value: string) => {
-    return value.split('_').map(word => 
+    return value.split('_').map(word =>
       word.charAt(0).toUpperCase() + word.slice(1)
     ).join(' ')
   }
@@ -484,14 +484,14 @@ const History: React.FC = () => {
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-60" />
           <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4" />
-          
+
           <div className="relative flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div className="space-y-4">
               <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2">
                 <HistoryIcon className="h-4 w-4 text-white" />
                 <span className="text-sm font-medium text-white">Chat History</span>
               </div>
-              
+
               <div className="space-y-2">
                 <h1 className="text-3xl font-bold text-white tracking-tight">
                   Your Conversations
@@ -519,39 +519,7 @@ const History: React.FC = () => {
             </div>
           </div>
 
-          {/* Search and Filter Bar */}
-          <div className="relative flex flex-col sm:flex-row gap-3 mt-8">
-            <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/50" />
-              <input
-                type="text"
-                placeholder="Search conversations..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/30 transition-all"
-              />
-            </div>
-            
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0">
-              <Filter className="w-5 h-5 text-white/50 flex-shrink-0" />
-              {uniqueTypes.map(type => (
-                <button
-                  key={type}
-                  onClick={() => {
-                    setFilterType(type)
-                    setCurrentPage(1)
-                  }}
-                  className={`px-4 py-2.5 rounded-xl whitespace-nowrap transition-colors ${
-                    filterType === type
-                      ? 'bg-white text-[var(--color-primary)] font-medium'
-                      : 'bg-white/10 border border-white/20 text-white hover:bg-white/20'
-                  }`}
-                >
-                  {type === 'all' ? 'All Types' : formatType(type)}
-                </button>
-              ))}
-            </div>
-          </div>
+
         </div>
 
         {/* Stats */}
@@ -592,8 +560,8 @@ const History: React.FC = () => {
                     {sessions.filter(s => {
                       const sessionDate = new Date(s.createdAt)
                       const now = new Date()
-                      return sessionDate.getMonth() === now.getMonth() && 
-                             sessionDate.getFullYear() === now.getFullYear()
+                      return sessionDate.getMonth() === now.getMonth() &&
+                        sessionDate.getFullYear() === now.getFullYear()
                     }).length}
                   </p>
                 </div>
@@ -604,7 +572,42 @@ const History: React.FC = () => {
 
         {/* Main Content */}
         <div className="history-content bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-            {/* Loading State */}
+          {/* Search and Filter Header */}
+          <div className="p-6 border-b border-gray-100">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search conversations..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] focus:bg-white transition-all"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0">
+                <Filter className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                {uniqueTypes.map(type => (
+                  <button
+                    key={type}
+                    onClick={() => {
+                      setFilterType(type)
+                      setCurrentPage(1)
+                    }}
+                    className={`px-4 py-2.5 rounded-xl whitespace-nowrap transition-colors ${filterType === type
+                      ? 'bg-[var(--color-primary)] text-white font-medium shadow-sm'
+                      : 'bg-gray-100 border border-gray-200 text-gray-600 hover:bg-gray-200'
+                      }`}
+                  >
+                    {type === 'all' ? 'All Types' : formatType(type)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Loading State */}
             {loading && (
               <div className="p-8">
                 <div className="space-y-4">
@@ -647,7 +650,7 @@ const History: React.FC = () => {
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">No conversations yet</h3>
                 <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                  {searchQuery || filterType !== 'all' 
+                  {searchQuery || filterType !== 'all'
                     ? 'No conversations match your search criteria. Try adjusting your filters.'
                     : 'Start your first conversation to see it appear here.'}
                 </p>
@@ -682,14 +685,14 @@ const History: React.FC = () => {
                       className="group p-6 hover:bg-gray-50 transition-all duration-200"
                     >
                       <div className="flex items-start justify-between gap-4">
-                        <div 
+                        <div
                           className="flex items-start gap-4 flex-1 min-w-0 cursor-pointer"
                           onClick={() => handleOpen(session.id)}
                         >
                           <div className="p-3 bg-primary/10 rounded-xl text-primary flex-shrink-0">
                             {getTypeIcon(session.type)}
                           </div>
-                          
+
                           <div className="flex-1 min-w-0">
                             <div className="flex flex-wrap items-center gap-2 mb-2">
                               <h3 className="text-lg font-semibold text-gray-900 truncate">
@@ -699,7 +702,7 @@ const History: React.FC = () => {
                                 {session.status}
                               </span>
                             </div>
-                            
+
                             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
                               <div className="flex items-center gap-1.5">
                                 <div className="p-1 bg-gray-100 rounded">
@@ -707,13 +710,13 @@ const History: React.FC = () => {
                                 </div>
                                 <span>{formatType(session.type)}</span>
                               </div>
-                              
+
                               <div className="flex items-center gap-1.5">
                                 <Clock className="w-4 h-4" />
                                 <span>{session.dateLabel} • {session.timeLabel}</span>
                               </div>
                             </div>
-                            
+
                             {session.title && (
                               <p className="mt-3 text-gray-700 line-clamp-2">
                                 Conversation started on {session.fullDate}
@@ -721,7 +724,7 @@ const History: React.FC = () => {
                             )}
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center gap-3 flex-shrink-0">
                           <button
                             onClick={(e) => confirmDelete(session, e)}
@@ -735,9 +738,9 @@ const History: React.FC = () => {
                               <Trash2 className="w-5 h-5" />
                             )}
                           </button>
-                          
+
                           <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                            <ChevronRight 
+                            <ChevronRight
                               className="w-5 h-5 text-gray-400 cursor-pointer"
                               onClick={() => handleOpen(session.id)}
                             />
@@ -767,7 +770,7 @@ const History: React.FC = () => {
                 Page <span className="font-semibold">{currentPage}</span> of{' '}
                 <span className="font-semibold">{totalPages}</span>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <button
                   onClick={goToFirstPage}
@@ -797,11 +800,10 @@ const History: React.FC = () => {
                       <button
                         key={pageNum}
                         onClick={() => goToPage(pageNum as number)}
-                        className={`w-10 h-10 rounded-lg transition-colors ${
-                          currentPage === pageNum
-                            ? 'bg-[var(--color-primary)] text-white border border-[var(--color-primary)]'
-                            : 'border border-gray-200 hover:bg-gray-50 text-gray-700'
-                        }`}
+                        className={`w-10 h-10 rounded-lg transition-colors ${currentPage === pageNum
+                          ? 'bg-[var(--color-primary)] text-white border border-[var(--color-primary)]'
+                          : 'border border-gray-200 hover:bg-gray-50 text-gray-700'
+                          }`}
                         aria-label={`Page ${pageNum}`}
                         aria-current={currentPage === pageNum ? 'page' : undefined}
                       >
@@ -849,137 +851,137 @@ const History: React.FC = () => {
             </div>
           )}
         </div>
-      
 
-      {/* New Chat Modal */}
-      {isCreateModalOpen && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
-          onClick={(e) => e.target === e.currentTarget && closeCreateModal()}
-        >
-          <div ref={modalRef} className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
-            <div className="bg-[var(--color-primary)] px-6 py-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-white">New Chat Session</h3>
-                  <p className="text-sm text-white/70">Give your conversation a name</p>
-                </div>
-                <button
-                  onClick={closeCreateModal}
-                  disabled={creatingSession}
-                  className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-            </div>
-            
-            <div className="p-6 space-y-5">
-              <div>
-                <label className="text-sm font-medium text-gray-700 block mb-2" htmlFor="chat-title">
-                  Chat Title
-                </label>
-                <input
-                  id="chat-title"
-                  type="text"
-                  value={newSessionTitle}
-                  onChange={(e) => {
-                    setNewSessionTitle(e.target.value)
-                    if (titleError) setTitleError('')
-                    if (createError) setCreateError(null)
-                  }}
-                  onKeyDown={handleKeyDown}
-                  placeholder="e.g. Frontend Developer Career Path"
-                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition-all"
-                  disabled={creatingSession}
-                  autoFocus
-                />
-                {(titleError || createError) && (
-                  <p className="text-sm text-red-500 mt-2">{titleError || createError}</p>
-                )}
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={closeCreateModal}
-                  disabled={creatingSession}
-                  className="flex-1 py-3 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleCreateSession}
-                  disabled={creatingSession || !newSessionTitle.trim()}
-                  className="flex-1 inline-flex items-center justify-center gap-2 py-3 text-sm font-semibold text-white bg-[var(--color-primary)] hover:opacity-90 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {creatingSession && <Loader2 className="h-4 w-4 animate-spin" />}
-                  {creatingSession ? 'Creating...' : 'Create Chat'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && sessionToDelete && (
-        <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-          onClick={(e) => e.target === e.currentTarget && !deletingSessionId && (setShowDeleteModal(false), setSessionToDelete(null))}
-        >
-          <div ref={deleteModalRef} className="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden">
-            <div className="bg-rose-500 px-6 py-5">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-white/20 rounded-lg">
-                  <AlertTriangle className="w-5 h-5 text-white" />
+        {/* New Chat Modal */}
+        {isCreateModalOpen && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+            onClick={(e) => e.target === e.currentTarget && closeCreateModal()}
+          >
+            <div ref={modalRef} className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
+              <div className="bg-[var(--color-primary)] px-6 py-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">New Chat Session</h3>
+                    <p className="text-sm text-white/70">Give your conversation a name</p>
+                  </div>
+                  <button
+                    onClick={closeCreateModal}
+                    disabled={creatingSession}
+                    className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
                 </div>
+              </div>
+
+              <div className="p-6 space-y-5">
                 <div>
-                  <h3 className="text-lg font-semibold text-white">Delete Conversation</h3>
-                  <p className="text-sm text-white/70">This action cannot be undone</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="p-6 space-y-5">
-              <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                <p className="text-gray-700">
-                  Are you sure you want to delete <span className="font-semibold">{sessionToDelete.title || 'Untitled Conversation'}</span>?
-                </p>
-                <p className="text-sm text-gray-500 mt-2">
-                  Type: {formatType(sessionToDelete.type)} • Created: {new Date(sessionToDelete.createdAt).toLocaleDateString()}
-                </p>
-              </div>
-              
-              <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    setShowDeleteModal(false)
-                    setSessionToDelete(null)
-                  }}
-                  disabled={deletingSessionId === sessionToDelete.id}
-                  className="flex-1 py-3 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors disabled:opacity-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleDeleteSession}
-                  disabled={deletingSessionId === sessionToDelete.id}
-                  className="flex-1 inline-flex items-center justify-center gap-2 py-3 text-sm font-semibold text-white bg-rose-500 hover:bg-rose-600 rounded-xl transition-colors disabled:opacity-50"
-                >
-                  {deletingSessionId === sessionToDelete.id ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Deleting...
-                    </>
-                  ) : (
-                    'Delete'
+                  <label className="text-sm font-medium text-gray-700 block mb-2" htmlFor="chat-title">
+                    Chat Title
+                  </label>
+                  <input
+                    id="chat-title"
+                    type="text"
+                    value={newSessionTitle}
+                    onChange={(e) => {
+                      setNewSessionTitle(e.target.value)
+                      if (titleError) setTitleError('')
+                      if (createError) setCreateError(null)
+                    }}
+                    onKeyDown={handleKeyDown}
+                    placeholder="e.g. Frontend Developer Career Path"
+                    className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition-all"
+                    disabled={creatingSession}
+                    autoFocus
+                  />
+                  {(titleError || createError) && (
+                    <p className="text-sm text-red-500 mt-2">{titleError || createError}</p>
                   )}
-                </button>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={closeCreateModal}
+                    disabled={creatingSession}
+                    className="flex-1 py-3 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleCreateSession}
+                    disabled={creatingSession || !newSessionTitle.trim()}
+                    className="flex-1 inline-flex items-center justify-center gap-2 py-3 text-sm font-semibold text-white bg-[var(--color-primary)] hover:opacity-90 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {creatingSession && <Loader2 className="h-4 w-4 animate-spin" />}
+                    {creatingSession ? 'Creating...' : 'Create Chat'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && sessionToDelete && (
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+            onClick={(e) => e.target === e.currentTarget && !deletingSessionId && (setShowDeleteModal(false), setSessionToDelete(null))}
+          >
+            <div ref={deleteModalRef} className="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden">
+              <div className="bg-rose-500 px-6 py-5">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-lg">
+                    <AlertTriangle className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">Delete Conversation</h3>
+                    <p className="text-sm text-white/70">This action cannot be undone</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 space-y-5">
+                <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                  <p className="text-gray-700">
+                    Are you sure you want to delete <span className="font-semibold">{sessionToDelete.title || 'Untitled Conversation'}</span>?
+                  </p>
+                  <p className="text-sm text-gray-500 mt-2">
+                    Type: {formatType(sessionToDelete.type)} • Created: {new Date(sessionToDelete.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      setShowDeleteModal(false)
+                      setSessionToDelete(null)
+                    }}
+                    disabled={deletingSessionId === sessionToDelete.id}
+                    className="flex-1 py-3 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeleteSession}
+                    disabled={deletingSessionId === sessionToDelete.id}
+                    className="flex-1 inline-flex items-center justify-center gap-2 py-3 text-sm font-semibold text-white bg-rose-500 hover:bg-rose-600 rounded-xl transition-colors disabled:opacity-50"
+                  >
+                    {deletingSessionId === sessionToDelete.id ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Deleting...
+                      </>
+                    ) : (
+                      'Delete'
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
     </>
   )
 }

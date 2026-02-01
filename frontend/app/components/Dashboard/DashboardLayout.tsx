@@ -12,6 +12,7 @@ import "../../../public/styles/dashboardLayout.css";
 import ChatBot from "../Tools/ChatBot";
 import History from "../Tools/History";
 import CoverLetter from "../Tools/CoverLetter";
+import Credits from "../Tools/Credits";
 
 // Define valid routes
 const validRoutes = [
@@ -22,7 +23,8 @@ const validRoutes = [
   "chatbot",
   "resume-builder",
   "roadmap",
-  "cover-letter"
+  "cover-letter",
+  "credits"
 ];
 
 const DashboardLayout = () => {
@@ -84,7 +86,9 @@ const DashboardLayout = () => {
       "roadmap": "roadmap",
       "Roadmap": "roadmap",
       "coverLetter": "cover-letter",
-      "Cover Letter": "cover-letter"
+      "Cover Letter": "cover-letter",
+      "credits": "credits",
+      "Credits": "credits"
     };
 
     const route = routeMap[component] || "dashboard";
@@ -106,7 +110,9 @@ const DashboardLayout = () => {
       "Resume": "resume-builder",
       "Cover Letter": "cover-letter",
       "Roadmap": "roadmap",
-      "ChatBot": "chatbot"
+      "ChatBot": "chatbot",
+      "credits": "credits",
+      "Credits": "credits"
     };
 
     const route = routeMap[componentName] || "dashboard";
@@ -131,6 +137,8 @@ const DashboardLayout = () => {
         return <div>Roadmap</div>;
       case "cover-letter":
         return <CoverLetter />;
+      case "credits":
+        return <Credits />;
       default:
         return <Dashboard onChangeComponent={handleDashboardTileClick} />;
     }

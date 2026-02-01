@@ -6,7 +6,7 @@ import { BsLaptopFill } from "react-icons/bs";
 import { FaTools, FaHistory } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import { MdSpaceDashboard } from "react-icons/md";
-import { Brain, Target, Users, Zap, Shield, CheckCircle, LucideIcon, FileText } from "lucide-react";
+import { Brain, Target, Users, Zap, Shield, CheckCircle, LucideIcon, FileText, Coins } from "lucide-react";
 
 // Types
 type NavbarItem = {
@@ -158,6 +158,11 @@ const sidebarItems: SidebarItem[] = [
     label: "Workspace", 
     cmpName: "workspace", 
     icon: BsLaptopFill
+  },
+  {
+    label: "Credits", 
+    cmpName: "credits", 
+    icon: Coins
   },
   {
     label: "Cover Letter", 

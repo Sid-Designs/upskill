@@ -21,7 +21,8 @@ const slugToLabelMap: Record<string, string> = {
   'chatbot': 'ChatBot',
   'resume-builder': 'Resume Builder',
   'roadmap': 'Roadmap',
-  'cover-letter': 'Cover Letter'
+  'cover-letter': 'Cover Letter',
+  'credits': 'Credits'
 };
 
 // Map sidebar labels to URL slugs
@@ -33,7 +34,8 @@ const labelToSlugMap: Record<string, string> = {
   'ChatBot': 'chatbot',
   'Resume Builder': 'resume-builder',
   'Roadmap': 'roadmap',
-  'Cover Letter': 'cover-letter'
+  'Cover Letter': 'cover-letter',
+  'Credits': 'credits'
 };
 
 const Sidebar = ({ selected, onSelect }: SidebarProps) => {
