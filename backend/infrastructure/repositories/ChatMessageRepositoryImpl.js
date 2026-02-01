@@ -18,7 +18,6 @@ class ChatMessageRepositoryImpl extends ChatMessageRepository {
     return this._toDomain(doc);
   }
 
-  // ✅ INDUSTRY STANDARD METHOD
   // Find messages by chat session ID (ordered)
   async findByChatSessionId(chatSessionId, { limit = 20 } = {}) {
     const docs = await ChatMessageModel.find({ chatSessionId })

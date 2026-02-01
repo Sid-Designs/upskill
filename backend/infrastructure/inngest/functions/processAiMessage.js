@@ -24,11 +24,15 @@ module.exports = inngest.createFunction(
     const { chatSessionId, aiMessageId, userId } = event.data;
 
     /* 1️⃣ Load session */
-    const chatSession = await chatSessionRepo.findById(chatSessionId);
+    const chatSession = await step.run("load-session", async () => {
+      return chatSessionRepo.findById(chatSessionId);
+    });
     if (!chatSession) throw new Error("ChatSession not found");
 
     /* 2️⃣ Load messages */
-    const messages = await chatMessageRepo.findByChatSessionId(chatSessionId);
+    const messages = await step.run("load-messages", async () => {
+      return chatMessageRepo.findByChatSessionId(chatSessionId);
+    });
 
     /* 3️⃣ Build context */
     const context = messages.map((m) => ({
@@ -38,7 +42,9 @@ module.exports = inngest.createFunction(
     }));
 
     /* 4️⃣ Load profile */
-    const profile = await profileRepo.getUserProfile(userId);
+    const profile = await step.run("load-profile", async () => {
+      return profileRepo.getUserProfile(userId);
+    });
 
     /* 5️⃣ Build prompt */
     const prompt = buildPrompt({
@@ -50,37 +56,52 @@ module.exports = inngest.createFunction(
     /* 6️⃣ Credit check */
     const cost = getCreditCost(chatSession.type);
     if (!profile || profile.credits < cost) {
-      await chatMessageRepo.update({
-        id: aiMessageId,
-        content: "Insufficient credits",
-        status: "failed",
+      await step.run("handle-insufficient-credits", async () => {
+        await chatMessageRepo.update({
+          id: aiMessageId,
+          content: "Insufficient credits",
+          status: "failed",
+        });
       });
+      
+      // Notify with retry
       sseManager.notify(chatSessionId, "failed", {
         reason: "insufficient_credits",
         chatSessionId,
-      });
-      return;
+      }, { retry: true, maxRetries: 10, retryDelay: 300 });
+      
+      return { status: "failed", reason: "insufficient_credits" };
     }
 
     /* 7️⃣ Call AI */
-    const provider = getAIProvider(chatSession.type);
-    const aiResult = await provider.generate(prompt);
+    const aiResult = await step.run("call-ai", async () => {
+      const provider = getAIProvider(chatSession.type);
+      return provider.generate(prompt);
+    });
 
     /* 8️⃣ Update AI message */
-    await chatMessageRepo.update({
-      id: aiMessageId,
-      content: aiResult.text,
-      model: aiResult.provider,
-      status: "completed",
+    await step.run("update-ai-message", async () => {
+      await chatMessageRepo.update({
+        id: aiMessageId,
+        content: aiResult.text,
+        model: aiResult.provider,
+        status: "completed",
+      });
     });
 
     /* 9️⃣ Deduct credits */
-    await profileRepo.deductCredits(userId, cost);
-
-    sseManager.notify(chatSessionId, "completed", {
-      message: "assistant_completed",
+    await step.run("deduct-credits", async () => {
+      await profileRepo.deductCredits(userId, cost);
     });
 
+    /* 🔟 Notify client with retry mechanism */
+    sseManager.notify(chatSessionId, "completed", {
+      message: "assistant_completed",
+      aiMessageId,
+    }, { retry: true, maxRetries: 10, retryDelay: 300 });
+
     console.log("[Inngest] AI response generated & credits deducted");
+    
+    return { status: "completed", aiMessageId };
   }
 );

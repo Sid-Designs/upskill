@@ -27,38 +27,56 @@ module.exports = inngest.createFunction(
     event: "ai.generate.cover-letter",
   },
 
-  async ({ event }) => {
+  async ({ event, step }) => {
     const { coverLetterId, userId } = event.data;
 
     /* 1️⃣ Load cover letter */
-    const coverLetter = await coverLetterRepo.findById(coverLetterId);
+    const coverLetter = await step.run("load-cover-letter", async () => {
+      return coverLetterRepo.findById(coverLetterId);
+    });
+    
     if (!coverLetter) {
       console.warn("[Inngest] Cover letter not found");
-      return;
+      return { status: "failed", reason: "not_found" };
     }
 
     /* 2️⃣ Load profile (MANDATORY) */
-    const profile = await profileRepo.getUserProfile(userId);
+    const profile = await step.run("load-profile", async () => {
+      return profileRepo.getUserProfile(userId);
+    });
+    
     if (!profile) {
-      coverLetter.fail();
-      coverLetter.generatedText =
-        "Please complete your profile before generating a cover letter.";
-      await coverLetterRepo.update(coverLetter);
-      return;
+      await step.run("handle-no-profile", async () => {
+        coverLetter.fail();
+        coverLetter.generatedText =
+          "Please complete your profile before generating a cover letter.";
+        await coverLetterRepo.update(coverLetter);
+      });
+      
+      sseManager.notify(coverLetterId, "failed", {
+        reason: "profile_incomplete",
+        coverLetterId,
+      }, { retry: true, maxRetries: 10, retryDelay: 300 });
+      
+      return { status: "failed", reason: "profile_incomplete" };
     }
 
     /* 3️⃣ Credit check */
     const cost = getCreditCost("cover_letter");
     if (profile.credits < cost) {
-      coverLetter.fail();
-      coverLetter.generatedText =
-        "You do not have enough credits to generate a cover letter.";
-      await coverLetterRepo.update(coverLetter);
+      await step.run("handle-insufficient-credits", async () => {
+        coverLetter.fail();
+        coverLetter.generatedText =
+          "You do not have enough credits to generate a cover letter.";
+        await coverLetterRepo.update(coverLetter);
+      });
+      
       sseManager.notify(coverLetterId, "failed", {
         reason: "insufficient_credits",
         coverLetterId,
-      });
-      return;
+      }, { retry: true, maxRetries: 10, retryDelay: 300 });
+      
+      return { status: "failed", reason: "insufficient_credits" };
     }
 
     /* 4️⃣ Build prompt */
@@ -70,21 +88,30 @@ module.exports = inngest.createFunction(
     });
 
     /* 5️⃣ Call AI (SAME FLOW AS CHAT) */
-    const provider = getAIProvider("cover_letter");
-    const aiResult = await provider.generate(prompt);
+    const aiResult = await step.run("call-ai", async () => {
+      const provider = getAIProvider("cover_letter");
+      return provider.generate(prompt);
+    });
 
     /* 6️⃣ Save AI result */
-    coverLetter.complete(aiResult.text, aiResult.provider);
-    await coverLetterRepo.update(coverLetter);
+    await step.run("save-result", async () => {
+      coverLetter.complete(aiResult.text, aiResult.provider);
+      await coverLetterRepo.update(coverLetter);
+    });
 
     /* 7️⃣ Deduct credits */
-    await profileRepo.deductCredits(userId, cost);
+    await step.run("deduct-credits", async () => {
+      await profileRepo.deductCredits(userId, cost);
+    });
 
     console.log("[Inngest] Cover letter generated & credits deducted");
 
+    /* 8️⃣ Notify client with retry mechanism */
     sseManager.notify(coverLetterId, "completed", {
       message: "cover_letter_completed",
       coverLetterId,
-    });
+    }, { retry: true, maxRetries: 10, retryDelay: 300 });
+    
+    return { status: "completed", coverLetterId };
   }
 );

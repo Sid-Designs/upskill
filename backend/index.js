@@ -31,6 +31,22 @@ app.use(
     credentials: true, 
   })
 );
+
+/**
+ * IMPORTANT: Razorpay Webhook Raw Body Parser
+ * 
+ * The webhook route needs the raw body (as string) for signature verification.
+ * This middleware must come BEFORE express.json() to capture the raw body.
+ * 
+ * It adds req.rawBody containing the raw string body for /api/payment/webhook
+ */
+app.use("/api/payment/webhook", express.json({
+  verify: (req, res, buf) => {
+    // Store raw body for webhook signature verification
+    req.rawBody = buf.toString();
+  }
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -60,11 +76,13 @@ const chatRoutes = require("./interfaces/http/routes/chatRoutes");
 const profileRoutes = require("./interfaces/http/routes/profileRoutes");
 const chatStreamRoutes = require("./interfaces/http/routes/chatStreamRoutes");
 const coverLetterStreamRoutes = require("./interfaces/http/routes/coverLetterStreamRoutes");
+const paymentRoutes = require("./interfaces/http/routes/paymentRoutes");
 
 app.use("/api/user", userRoutes);
 app.use("/api/user", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/payment", paymentRoutes);
 app.use(chatStreamRoutes);
 app.use(coverLetterStreamRoutes);
 app.use((err, req, res, next) => {

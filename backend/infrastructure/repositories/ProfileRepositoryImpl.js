@@ -78,6 +78,24 @@ class ProfileRepositoryImpl extends ProfileRepositories {
     return updated; 
   }
 
+  /**
+   * Add credits to user's profile.
+   * Used after successful payment verification.
+   * 
+   * @param {string} userId - User ID
+   * @param {number} amount - Credits to add
+   * @returns {Object} Updated profile document
+   */
+  async addCredits(userId, amount) {
+    const updated = await ProfileModel.findOneAndUpdate(
+      { userId },
+      { $inc: { credits: amount } },
+      { new: true }
+    );
+
+    return updated;
+  }
+
   // Delete Profile
   async deleteUserProfile(userId) {
     await ProfileModel.deleteOne({ userId });

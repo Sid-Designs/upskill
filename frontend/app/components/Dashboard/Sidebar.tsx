@@ -622,7 +622,7 @@ const Sidebar = ({ selected, onSelect }: SidebarProps) => {
         >
           {sidebarItems.map((item, idx) => (
             <div
-              className={`cursor-pointer z-10 flex justify-start items-center gap-4 py-3 px-4 relative group ${
+              className={`cursor-pointer hover:bg-[var(--color-secondary)] transition-all 200ms rounded-xl z-10 flex justify-start items-center gap-4 py-3 px-4 relative group ${
                 selectedLabel === item.label ? 'text-blue-600' : ''
               }`}
               key={idx}
@@ -632,7 +632,7 @@ const Sidebar = ({ selected, onSelect }: SidebarProps) => {
                   itemRefs.current[idx] = el;
                 }
               }}
-              style={{ height: '48px' }}
+              style={{ height: '48px' , userSelect: 'none'}}
               onClick={() => handleItemClick(item.label, idx)}
               onMouseEnter={() => handleItemMouseEnter(idx)}
               onMouseLeave={handleItemMouseLeave}

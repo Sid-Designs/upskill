@@ -44,21 +44,19 @@
 .chat-input {
   width: 100%;
   resize: none;
-  overflow-y: auto; /* important for scroll after max height */
+  overflow-y: hidden;
   font-size: 16px;
   line-height: 22px;
   outline: none;
-  caret-color: #007bff; /* blue cursor */
-  max-height: calc(22px * 7 + 20px); /* = approx 7 lines with padding */
+  caret-color: var(--color-primary);
+  max-height: 100px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
 }
 
-/* optional smooth look */
+/* Hide scrollbar for Chrome, Safari */
 .chat-input::-webkit-scrollbar {
-  width: 4px;
-}
-.chat-input::-webkit-scrollbar-thumb {
-  background: #cfcfcf;
-  border-radius: 4px;
+  display: none;
 }
 
 .newChatBtn {

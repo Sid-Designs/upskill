@@ -78,9 +78,13 @@ const DashboardLayout = () => {
       "AI Tools": "ai-tools",
       "History": "history",
       "chatBot": "chatbot",
+      "ChatBot": "chatbot",
       "resumeBuilder": "resume-builder",
+      "Resume Builder": "resume-builder",
       "roadmap": "roadmap",
-      "coverLetter": "cover-letter"
+      "Roadmap": "roadmap",
+      "coverLetter": "cover-letter",
+      "Cover Letter": "cover-letter"
     };
 
     const route = routeMap[component] || "dashboard";
@@ -120,7 +124,7 @@ const DashboardLayout = () => {
       case "history":
         return <History />;
       case "chatbot":
-        return <ChatBot />
+        return <ChatBot />;
       case "resume-builder":
         return <div>Resume Builder</div>;
       case "roadmap":
