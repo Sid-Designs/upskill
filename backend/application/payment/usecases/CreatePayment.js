@@ -1,4 +1,4 @@
-const { v4: uuidv4 } = require("uuid");
+const crypto = require("crypto");
 const Payment = require("../../../domains/payment/entities/Payment");
 
 /**
@@ -48,8 +48,8 @@ class CreateRazorpayOrder {
       console.log(`[CreateRazorpayOrder] Cancelled existing pending payment for user ${userId}`);
     }
 
-    // Generate unique receipt ID for tracking
-    const receipt = `upskill_${uuidv4().substring(0, 8)}`;
+    // Generate unique receipt ID for tracking (using Node's built-in crypto)
+    const receipt = `upskill_${crypto.randomUUID().substring(0, 8)}`;
 
     // Calculate credits to add (default: 1 credit = 1 INR)
     const credits = creditsToAdd || Math.floor(amount);
