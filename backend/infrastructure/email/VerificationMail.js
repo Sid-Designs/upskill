@@ -9,7 +9,7 @@ const sendVerificationEmail = async (email, token) => {
     const info = await sendEmailFromTemplate({
       to: email,
       subject: "Verify your email",
-      templateName: "verificationEmail.html",
+      templateName: "verify-email.html",
       variables: {
         USER_EMAIL: email,
         ACTION_LINK: verifyLink,

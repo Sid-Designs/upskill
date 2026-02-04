@@ -27,6 +27,7 @@ const sendEmailFromTemplate = async ({
     });
   } catch (err) {
     console.error("Email sending failed:", err.message);
+    throw err;
   }
 };
 
