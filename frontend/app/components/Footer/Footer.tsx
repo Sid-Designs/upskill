@@ -76,7 +76,7 @@ const Footer = () => {
           <div className="md:col-span-5 lg:col-span-6">
             <div>
               <img
-                src="/images/UpskillLogo.png"
+                src="https://upskillai.vercel.app/_next/image?url=%2Fimages%2FUpSkillLogo.png&w=256&q=75"
                 height={30}
                 width={100}
                 className="text-black"
@@ -129,7 +129,7 @@ const Footer = () => {
         </div>
         <div className="mt-12 border-t border-gray-200 pt-8 flex flex-col-reverse items-center justify-between gap-6 sm:flex-row">
           <p className="text-xs text-center sm:text-left">
-            &copy; UpSkill. All rights reserved. 2025–present.
+            &copy; UpSkill. All rights reserved. 
           </p>
           <div className="flex space-x-3">
             {socialLinks.map((link) => {

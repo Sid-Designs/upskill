@@ -29,7 +29,9 @@ const HomePageBox = () => {
     };
   }, []);
 
-  return <div className="homeBox" ref={boxRef}></div>;
+  return <div className="homeBox" ref={boxRef}>
+    <img src="/images/dashboardImg.webp" className="rounded homeBoxIcon" alt="UpSkill Logo" />
+  </div>;
 };
 
 export default HomePageBox;
