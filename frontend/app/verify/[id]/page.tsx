@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import api from '@/lib/api'
 import Link from 'next/link'
+import HideLayoutOnDashboard from '@/app/components/Dashboard/HideLayoutOnDashboard'
 import { CheckCircle2, XCircle, Loader2, Award, Calendar, Target, Layers, ExternalLink, ArrowLeft } from 'lucide-react'
 
 type CertificateData = {
@@ -60,26 +61,7 @@ export default function VerifyCertificatePage() {
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] flex flex-col">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-100 py-4">
-        <div className="max-w-4xl mx-auto px-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-[var(--color-primary)] font-bold text-xl">
-            <div className="w-8 h-8 rounded-lg bg-[var(--color-primary)] flex items-center justify-center">
-              <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                <path d="M2 17l10 5 10-5"/>
-                <path d="M2 12l10 5 10-5"/>
-              </svg>
-            </div>
-            UpSkill AI
-          </Link>
-          <Link href="/" className="text-sm text-gray-500 hover:text-[var(--color-primary)] flex items-center gap-1 transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Home
-          </Link>
-        </div>
-      </header>
-
+      <HideLayoutOnDashboard />
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center p-4 py-12">
         <div className="w-full max-w-2xl">
@@ -200,11 +182,6 @@ export default function VerifyCertificatePage() {
           )}
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="py-6 text-center text-sm text-gray-500">
-        <p>© {new Date().getFullYear()} UpSkill AI. All rights reserved.</p>
-      </footer>
     </div>
   )
 }
