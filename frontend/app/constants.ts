@@ -6,7 +6,7 @@ import { BsLaptopFill } from "react-icons/bs";
 import { FaTools, FaHistory } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import { MdSpaceDashboard } from "react-icons/md";
-import { Brain, Target, Users, Zap, Shield, CheckCircle, LucideIcon, FileText, Coins } from "lucide-react";
+import { Brain, Target, Users, Zap, Shield, CheckCircle, LucideIcon, FileText, Coins, Map, MessageSquare, MapPin, PenTool } from "lucide-react";
 
 // Types
 type NavbarItem = {
@@ -50,7 +50,7 @@ type StatItem = {
 };
 
 type AITool = {
-  icon: string;
+  icon: LucideIcon;
   tool: string;
   description: string;
   btnText: string;
@@ -154,53 +154,58 @@ const sidebarItems: SidebarItem[] = [
     cmpName: "ai-tools", 
     icon: FaTools
   },
-  {
-    label: "Workspace", 
-    cmpName: "workspace", 
-    icon: BsLaptopFill
-  },
-  {
-    label: "Credits", 
-    cmpName: "credits", 
-    icon: Coins
-  },
+  // {
+  //   label: "Workspace", 
+  //   cmpName: "workspace", 
+  //   icon: BsLaptopFill
+  // },
   {
     label: "Cover Letter", 
     cmpName: "cover-letter", 
     icon: FileText
+  },
+  {
+    label: "Roadmap", 
+    cmpName: "roadmap", 
+    icon: Map
   }, 
   {
     label: "History", 
     cmpName: "history", 
     icon: FaHistory
   },
+    {
+    label: "Credits", 
+    cmpName: "credits", 
+    icon: Coins
+  },
 ];
 
 // AI Tools
 const aiTools: AITool[] = [
   {
-    icon: "https://tse3.mm.bing.net/th/id/OIP.nP7KBnKqHQr845XfZ9cJ7wHaHa?cb=ucfimg2&pid=ImgDet&ucfimg=1&w=184&h=184&c=7&dpr=1.3&o=7&rm=3",
+    icon: MessageSquare,
     tool: "AI Career Advisor",
     description: "Engage with an intelligent career advisor to receive tailored guidance and instant insights for your professional journey.",
     btnText: "Start Chat",
     cmpName: "chatBot"
   },
   {
-    icon: "/images/UpSkillLogoIcon.png",
+    icon: FileText,
     tool: "AI Cover Letter",
     description: "Craft customized cover letters that highlight your strengths and align with specific job roles using advanced AI technology.",
     btnText: "Generate Letter",
     cmpName: "coverLetter"
   },
   {
-    icon: "/images/UpSkillLogoIcon.png",
+    icon: MapPin,
     tool: "Career Pathway Generator",
     description: "Develop a structured career roadmap designed around your strengths, aspirations, and long-term professional goals.",
     btnText: "Generate Pathway",
     cmpName: "roadmap"
   },
   {
-    icon: "/images/UpSkillLogoIcon.png",
+    icon: PenTool,
     tool: "AI Cover Letter Assistant",
     description: "Produce persuasive, personalized cover letters that effectively showcase your qualifications and align with target roles.",
     btnText: "Create Letter",

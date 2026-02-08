@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { aiTools } from "@/app/constants";
 import api from "@/lib/api";
 import { gsap, useGSAP } from "@/lib/gsap";
-import { MessageSquare, Mail, FileText, RefreshCw, TrendingUp, X, Loader2, ArrowRight, Zap, BarChart2 } from "lucide-react";
+import { MessageSquare, Mail, FileText, RefreshCw, TrendingUp, X, Loader2, ArrowRight, Zap, BarChart2, Map } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 // Cache key and duration (5 minutes)
@@ -28,6 +28,7 @@ const Dashboard = ({ onChangeComponent }: DashboardProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const coverLetterModalRef = useRef<HTMLDivElement>(null);
+  const roadmapModalRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
   
   const [displayName, setDisplayName] = useState("User");
@@ -58,6 +59,29 @@ const Dashboard = ({ onChangeComponent }: DashboardProps) => {
     jobTitle: "",
     companyName: "",
     jobDescription: ""
+  });
+
+  // Roadmap Modal state
+  const SKILL_LEVELS = ["Beginner", "Intermediate", "Advanced"];
+  const TARGET_LEVELS = ["Intermediate", "Advanced", "Expert", "Job-Ready"];
+  const LEARNING_STYLES = ["Hands-on", "Video-based", "Reading", "Interactive", "Project-based"];
+  const [isRoadmapModalOpen, setIsRoadmapModalOpen] = useState(false);
+  const [creatingRoadmap, setCreatingRoadmap] = useState(false);
+  const [roadmapError, setRoadmapError] = useState<string | null>(null);
+  const [goalTitle, setGoalTitle] = useState("");
+  const [durationDays, setDurationDays] = useState(30);
+  const [currentSkillLevel, setCurrentSkillLevel] = useState("Beginner");
+  const [targetSkillLevel, setTargetSkillLevel] = useState("Job-Ready");
+  const [educationalBackground, setEducationalBackground] = useState("");
+  const [priorKnowledge, setPriorKnowledge] = useState("");
+  const [learningStyle, setLearningStyle] = useState<string[]>(["Hands-on"]);
+  const [resourceConstraints, setResourceConstraints] = useState("");
+  const [careerGoal, setCareerGoal] = useState("");
+  const [additionalNotes, setAdditionalNotes] = useState("");
+  const [roadmapFormErrors, setRoadmapFormErrors] = useState({
+    goalTitle: "",
+    educationalBackground: "",
+    durationDays: ""
   });
 
   // GSAP fade animations
@@ -109,6 +133,26 @@ const Dashboard = ({ onChangeComponent }: DashboardProps) => {
       );
     }
   }, [isCreateModalOpen]);
+
+  // Cover Letter Modal fade animation
+  useEffect(() => {
+    if (isCoverLetterModalOpen && coverLetterModalRef.current) {
+      gsap.fromTo(coverLetterModalRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.15 }
+      );
+    }
+  }, [isCoverLetterModalOpen]);
+
+  // Roadmap Modal fade animation
+  useEffect(() => {
+    if (isRoadmapModalOpen && roadmapModalRef.current) {
+      gsap.fromTo(roadmapModalRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.15 }
+      );
+    }
+  }, [isRoadmapModalOpen]);
 
   const normalizeList = (value: any): any[] => {
     if (Array.isArray(value)) return value;
@@ -306,6 +350,22 @@ const Dashboard = ({ onChangeComponent }: DashboardProps) => {
       setIsCoverLetterModalOpen(true);
       return;
     }
+    if (cmpName === "roadmap") {
+      setGoalTitle("");
+      setDurationDays(30);
+      setCurrentSkillLevel("Beginner");
+      setTargetSkillLevel("Job-Ready");
+      setEducationalBackground("");
+      setPriorKnowledge("");
+      setLearningStyle(["Hands-on"]);
+      setResourceConstraints("");
+      setCareerGoal("");
+      setAdditionalNotes("");
+      setRoadmapError(null);
+      setRoadmapFormErrors({ goalTitle: "", educationalBackground: "", durationDays: "" });
+      setIsRoadmapModalOpen(true);
+      return;
+    }
     onChangeComponent(cmpName);
   };
 
@@ -441,15 +501,71 @@ const Dashboard = ({ onChangeComponent }: DashboardProps) => {
     }
   };
 
-  // Cover Letter Modal fade animation
-  useEffect(() => {
-    if (isCoverLetterModalOpen && coverLetterModalRef.current) {
-      gsap.fromTo(coverLetterModalRef.current,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.15 }
-      );
+  // Roadmap Modal Functions
+  const closeRoadmapModal = () => {
+    if (creatingRoadmap) return;
+    if (roadmapModalRef.current) {
+      gsap.to(roadmapModalRef.current, {
+        opacity: 0, duration: 0.12,
+        onComplete: () => {
+          setIsRoadmapModalOpen(false);
+          setRoadmapError(null);
+          setRoadmapFormErrors({ goalTitle: "", educationalBackground: "", durationDays: "" });
+        }
+      });
+    } else {
+      setIsRoadmapModalOpen(false);
     }
-  }, [isCoverLetterModalOpen]);
+  };
+
+  const validateRoadmapForm = () => {
+    const errors = { goalTitle: "", educationalBackground: "", durationDays: "" };
+    let isValid = true;
+    if (!goalTitle.trim()) { errors.goalTitle = "Goal title is required"; isValid = false; }
+    else if (goalTitle.trim().length > 200) { errors.goalTitle = "Goal title must be less than 200 characters"; isValid = false; }
+    if (!educationalBackground.trim()) { errors.educationalBackground = "Educational background is required"; isValid = false; }
+    if (durationDays < 7) { errors.durationDays = "Duration must be at least 7 days"; isValid = false; }
+    else if (durationDays > 365) { errors.durationDays = "Duration cannot exceed 365 days"; isValid = false; }
+    setRoadmapFormErrors(errors);
+    return isValid;
+  };
+
+  const toggleLearningStyle = (style: string) => {
+    setLearningStyle(prev =>
+      prev.includes(style) ? prev.filter(s => s !== style) : [...prev, style]
+    );
+  };
+
+  const handleCreateRoadmap = async () => {
+    if (!validateRoadmapForm()) return;
+    setCreatingRoadmap(true);
+    setRoadmapError(null);
+    try {
+      const response = await api.post("/api/roadmap/generate", {
+        goalTitle: goalTitle.trim(),
+        durationDays,
+        currentSkillLevel,
+        targetSkillLevel,
+        educationalBackground: educationalBackground.trim(),
+        priorKnowledge: priorKnowledge.split(",").map(s => s.trim()).filter(Boolean),
+        learningStyle,
+        resourceConstraints: resourceConstraints.trim() || null,
+        careerGoal: careerGoal.trim() || null,
+        additionalNotes: additionalNotes.trim() || null,
+      });
+      const newRoadmap = response.data?.data;
+      if (!newRoadmap?.id) throw new Error("Unable to generate roadmap");
+      setIsRoadmapModalOpen(false);
+      router.push(`/dashboard/roadmap/${newRoadmap.id}?new=true`);
+    } catch (err: any) {
+      const message = err?.response?.data?.message || 
+        err?.response?.data?.error || 
+        "Unable to generate roadmap right now. Please try again.";
+      setRoadmapError(message);
+    } finally {
+      setCreatingRoadmap(false);
+    }
+  };
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -613,11 +729,9 @@ const Dashboard = ({ onChangeComponent }: DashboardProps) => {
                 disabled={creatingSession && item.cmpName === "chatBot"}
                 className="tool-item group w-full flex items-center gap-4 p-4 bg-gray-50 hover:bg-[var(--color-primary)]/5 border border-transparent hover:border-[var(--color-primary)]/20 rounded-xl transition-all duration-200 text-left"
               >
-                <img 
-                  src={item.icon} 
-                  alt="" 
-                  className="h-11 w-11 rounded-xl object-cover shadow-sm flex-shrink-0"
-                />
+                <div className="h-11 w-11 rounded-xl bg-[var(--color-primary)]/10 shadow-sm flex-shrink-0 flex items-center justify-center">
+                  <item.icon className="h-5 w-5 text-[var(--color-primary)]" />
+                </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-sm font-semibold text-gray-800 group-hover:text-[var(--color-primary)] transition-colors">
                     {item.tool}
@@ -709,12 +823,17 @@ const Dashboard = ({ onChangeComponent }: DashboardProps) => {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
           onClick={(e) => e.target === e.currentTarget && closeCoverLetterModal()}
         >
-          <div ref={coverLetterModalRef} className="w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
-            <div className="bg-gradient-to-r from-amber-500 to-orange-600 px-6 py-5">
+          <div ref={coverLetterModalRef} className="w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            <div className="bg-[var(--color-primary)] px-6 py-5 flex-shrink-0">
               <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-white">Generate Cover Letter</h3>
-                  <p className="text-sm text-white/70">Fill in the job details to create your letter</p>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+                    <FileText className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">Generate Cover Letter</h3>
+                    <p className="text-sm text-white/70">Fill in the job details to create your letter</p>
+                  </div>
                 </div>
                 <button
                   onClick={closeCoverLetterModal}
@@ -726,7 +845,7 @@ const Dashboard = ({ onChangeComponent }: DashboardProps) => {
               </div>
             </div>
             
-            <div className="p-6 space-y-5">
+            <div className="p-6 space-y-5 overflow-y-auto flex-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               <div>
                 <label className="text-sm font-medium text-gray-700 block mb-2" htmlFor="dashboard-job-title">
                   Job Title <span className="text-red-500">*</span>
@@ -741,7 +860,7 @@ const Dashboard = ({ onChangeComponent }: DashboardProps) => {
                     if (coverLetterError) setCoverLetterError(null);
                   }}
                   placeholder="e.g. Senior Software Engineer"
-                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
+                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition-all"
                   disabled={creatingCoverLetter}
                   autoFocus
                 />
@@ -764,7 +883,7 @@ const Dashboard = ({ onChangeComponent }: DashboardProps) => {
                     if (coverLetterError) setCoverLetterError(null);
                   }}
                   placeholder="e.g. Google, Microsoft, etc."
-                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
+                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition-all"
                   disabled={creatingCoverLetter}
                 />
                 {formErrors.companyName && (
@@ -786,7 +905,7 @@ const Dashboard = ({ onChangeComponent }: DashboardProps) => {
                   }}
                   placeholder="Paste the job description here..."
                   rows={6}
-                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none transition-all resize-none"
+                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition-all resize-none"
                   disabled={creatingCoverLetter}
                 />
                 {formErrors.jobDescription && (
@@ -812,10 +931,261 @@ const Dashboard = ({ onChangeComponent }: DashboardProps) => {
                 <button
                   onClick={() => void handleCreateCoverLetter()}
                   disabled={creatingCoverLetter || !jobTitle.trim() || !companyName.trim() || !jobDescription.trim()}
-                  className="flex-1 inline-flex items-center justify-center gap-2 py-3 text-sm font-semibold text-white bg-gradient-to-r from-amber-500 to-orange-600 hover:opacity-90 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 inline-flex items-center justify-center gap-2 py-3 text-sm font-semibold text-white bg-[var(--color-primary)] hover:opacity-90 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {creatingCoverLetter && <Loader2 className="h-4 w-4 animate-spin" />}
                   {creatingCoverLetter ? "Generating..." : "Generate Letter"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Roadmap Modal */}
+      {isRoadmapModalOpen && (
+        <div
+          ref={roadmapModalRef}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+          onClick={(e) => e.target === e.currentTarget && closeRoadmapModal()}
+        >
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden">
+            {/* Header */}
+            <div className="p-6 bg-[var(--color-primary)] relative overflow-hidden flex-shrink-0">
+              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-60" />
+              <div className="relative flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+                    <Map className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">Generate Career Pathway</h3>
+                    <p className="text-sm text-white/70">Create a personalized learning roadmap</p>
+                  </div>
+                </div>
+                <button
+                  onClick={closeRoadmapModal}
+                  className="p-2 hover:bg-white/20 rounded-full transition-colors"
+                  disabled={creatingRoadmap}
+                >
+                  <X className="h-5 w-5 text-white" />
+                </button>
+              </div>
+            </div>
+
+            {/* Form */}
+            <div className="p-6 space-y-4 overflow-y-auto flex-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              {/* Goal Title */}
+              <div>
+                <label className="text-sm font-medium text-gray-700 block mb-2" htmlFor="dashboard-goal-title">
+                  Learning Goal <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="dashboard-goal-title"
+                  type="text"
+                  value={goalTitle}
+                  onChange={(e) => {
+                    setGoalTitle(e.target.value);
+                    if (roadmapFormErrors.goalTitle) setRoadmapFormErrors(prev => ({ ...prev, goalTitle: "" }));
+                    if (roadmapError) setRoadmapError(null);
+                  }}
+                  placeholder="e.g. Learn React.js, Master Python, etc."
+                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition-all"
+                  disabled={creatingRoadmap}
+                  autoFocus
+                />
+                {roadmapFormErrors.goalTitle && (
+                  <p className="text-sm text-red-500 mt-1">{roadmapFormErrors.goalTitle}</p>
+                )}
+              </div>
+
+              {/* Duration */}
+              <div>
+                <label className="text-sm font-medium text-gray-700 block mb-2" htmlFor="dashboard-duration-days">
+                  Duration (Days): <span className="font-bold text-[var(--color-primary)]">{durationDays}</span>
+                </label>
+                <input
+                  id="dashboard-duration-days"
+                  type="range"
+                  min={7}
+                  max={365}
+                  value={durationDays}
+                  onChange={(e) => {
+                    setDurationDays(Number(e.target.value));
+                    if (roadmapFormErrors.durationDays) setRoadmapFormErrors(prev => ({ ...prev, durationDays: "" }));
+                  }}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[var(--color-primary)]"
+                  disabled={creatingRoadmap}
+                />
+                <div className="flex justify-between text-xs text-gray-400 mt-1">
+                  <span>1 week</span>
+                  <span>1 year</span>
+                </div>
+                {roadmapFormErrors.durationDays && (
+                  <p className="text-sm text-red-500 mt-1">{roadmapFormErrors.durationDays}</p>
+                )}
+              </div>
+
+              {/* Skill Levels */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 block mb-2">Current Level</label>
+                  <select
+                    value={currentSkillLevel}
+                    onChange={(e) => setCurrentSkillLevel(e.target.value)}
+                    className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition-all bg-white"
+                    disabled={creatingRoadmap}
+                  >
+                    {SKILL_LEVELS.map(level => (
+                      <option key={level} value={level}>{level}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 block mb-2">Target Level</label>
+                  <select
+                    value={targetSkillLevel}
+                    onChange={(e) => setTargetSkillLevel(e.target.value)}
+                    className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition-all bg-white"
+                    disabled={creatingRoadmap}
+                  >
+                    {TARGET_LEVELS.map(level => (
+                      <option key={level} value={level}>{level}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Educational Background */}
+              <div>
+                <label className="text-sm font-medium text-gray-700 block mb-2" htmlFor="dashboard-education-bg">
+                  Educational Background <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="dashboard-education-bg"
+                  type="text"
+                  value={educationalBackground}
+                  onChange={(e) => {
+                    setEducationalBackground(e.target.value);
+                    if (roadmapFormErrors.educationalBackground) setRoadmapFormErrors(prev => ({ ...prev, educationalBackground: "" }));
+                    if (roadmapError) setRoadmapError(null);
+                  }}
+                  placeholder="e.g. CS degree, Self-taught, Bootcamp graduate"
+                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition-all"
+                  disabled={creatingRoadmap}
+                />
+                {roadmapFormErrors.educationalBackground && (
+                  <p className="text-sm text-red-500 mt-1">{roadmapFormErrors.educationalBackground}</p>
+                )}
+              </div>
+
+              {/* Prior Knowledge */}
+              <div>
+                <label className="text-sm font-medium text-gray-700 block mb-2" htmlFor="dashboard-prior-knowledge">
+                  Prior Knowledge <span className="text-gray-400 font-normal">(comma-separated)</span>
+                </label>
+                <input
+                  id="dashboard-prior-knowledge"
+                  type="text"
+                  value={priorKnowledge}
+                  onChange={(e) => setPriorKnowledge(e.target.value)}
+                  placeholder="e.g. HTML, CSS, JavaScript basics"
+                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition-all"
+                  disabled={creatingRoadmap}
+                />
+              </div>
+
+              {/* Learning Style */}
+              <div>
+                <label className="text-sm font-medium text-gray-700 block mb-2">Preferred Learning Style</label>
+                <div className="flex flex-wrap gap-2">
+                  {LEARNING_STYLES.map(style => (
+                    <button
+                      key={style}
+                      type="button"
+                      onClick={() => toggleLearningStyle(style)}
+                      disabled={creatingRoadmap}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                        learningStyle.includes(style)
+                          ? "bg-[var(--color-primary)] text-white"
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      } disabled:opacity-50`}
+                    >
+                      {style}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Career Goal */}
+              <div>
+                <label className="text-sm font-medium text-gray-700 block mb-2" htmlFor="dashboard-career-goal">
+                  Career Goal <span className="text-gray-400 font-normal">(optional)</span>
+                </label>
+                <input
+                  id="dashboard-career-goal"
+                  type="text"
+                  value={careerGoal}
+                  onChange={(e) => setCareerGoal(e.target.value)}
+                  placeholder="e.g. Frontend Developer at a tech company"
+                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition-all"
+                  disabled={creatingRoadmap}
+                />
+              </div>
+
+              {/* Resource Constraints */}
+              <div>
+                <label className="text-sm font-medium text-gray-700 block mb-2" htmlFor="dashboard-resource-constraints">
+                  Resource Constraints <span className="text-gray-400 font-normal">(optional)</span>
+                </label>
+                <input
+                  id="dashboard-resource-constraints"
+                  type="text"
+                  value={resourceConstraints}
+                  onChange={(e) => setResourceConstraints(e.target.value)}
+                  placeholder="e.g. Free resources only, 2 hours/day"
+                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition-all"
+                  disabled={creatingRoadmap}
+                />
+              </div>
+
+              {/* Additional Notes */}
+              <div>
+                <label className="text-sm font-medium text-gray-700 block mb-2" htmlFor="dashboard-additional-notes">
+                  Additional Notes <span className="text-gray-400 font-normal">(optional)</span>
+                </label>
+                <textarea
+                  id="dashboard-additional-notes"
+                  value={additionalNotes}
+                  onChange={(e) => setAdditionalNotes(e.target.value)}
+                  placeholder="Any other preferences or requirements..."
+                  rows={3}
+                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none transition-all resize-none"
+                  disabled={creatingRoadmap}
+                />
+              </div>
+
+              {roadmapError && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-xl">
+                  <p className="text-sm text-red-600">{roadmapError}</p>
+                </div>
+              )}
+
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  onClick={closeRoadmapModal}
+                  disabled={creatingRoadmap}
+                  className="flex-1 py-3 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => void handleCreateRoadmap()}
+                  disabled={creatingRoadmap || !goalTitle.trim() || !educationalBackground.trim()}
+                  className="flex-1 inline-flex items-center justify-center gap-2 py-3 text-sm font-semibold text-white bg-[var(--color-primary)] hover:opacity-90 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {creatingRoadmap && <Loader2 className="h-4 w-4 animate-spin" />}
+                  {creatingRoadmap ? "Generating..." : "Generate Pathway"}
                 </button>
               </div>
             </div>

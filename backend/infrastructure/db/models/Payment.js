@@ -40,15 +40,12 @@ const paymentSchema = Schema(
     // Razorpay payment ID (received after successful payment)
     razorpayPaymentId: {
       type: String,
-      sparse: true,
-      unique: true,
-      index: true,
-      default: null,
+      default: undefined,
     },
     // Razorpay signature (for verification)
     razorpaySignature: {
       type: String,
-      default: null,
+      default: undefined,
     },
     status: {
       type: String,
@@ -82,6 +79,18 @@ const paymentSchema = Schema(
 paymentSchema.index(
   { userId: 1, status: 1 },
   { partialFilterExpression: { status: "pending" } }
+);
+
+// Unique index on razorpayPaymentId, but ONLY for documents where it actually exists
+// This avoids E11000 duplicate key errors when multiple pending payments have no paymentId yet
+paymentSchema.index(
+  { razorpayPaymentId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      razorpayPaymentId: { $exists: true, $type: "string" },
+    },
+  }
 );
 
 // Export

@@ -84,6 +84,14 @@
   padding: 10px;
 }
 
+@media screen and (max-width: 499px) {
+  .profileMenu{
+    left: 50%;
+    bottom: 100%;
+    transform: translateX(-50%);
+  }
+}
+
 .profileMenuItem {
   padding: 10px;
   display: flex;
@@ -172,5 +180,100 @@
 @media screen and (max-width: 878px) {
   .dashContent {
     flex-wrap: wrap;
+  }
+}
+
+/* ===== Mobile hamburger button (hidden on desktop) ===== */
+.mobile-menu-btn {
+  display: none;
+}
+
+/* ===== Mobile Sidebar Overlay & Blur ===== */
+@media screen and (max-width: 768px) {
+  .dashLayout {
+    position: relative;
+  }
+
+  /* Hamburger button visible on mobile */
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 30;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background-color: var(--color-background);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    cursor: pointer;
+    color: #333;
+    transition: background-color 0.2s, box-shadow 0.2s;
+  }
+
+  .mobile-menu-btn:hover {
+    background-color: #f0f0f0;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+  }
+
+  .sidebar.sidebar-responsive {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 50;
+    height: 100vh;
+    margin: 0;
+    border-radius: 0 18px 18px 0;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .sidebar.sidebar-responsive.sidebarClose {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.sidebar-responsive.sidebarOpen {
+    transform: translateX(0);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Dashboard takes full width on mobile since sidebar is fixed/hidden */
+  .dashboard {
+    width: 100% !important;
+    margin-left: 0 !important;
+    transition: filter 0.3s ease-in-out;
+  }
+
+  /* Dark semi-transparent overlay behind the sidebar */
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    z-index: 40;
+    animation: overlayFadeIn 0.3s ease forwards;
+  }
+
+  @keyframes overlayFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Blur the dashboard content when sidebar is open */
+  .dashboard.dashboard-blurred {
+    filter: blur(4px) brightness(0.92);
+    pointer-events: none;
+    user-select: none;
+    transition: filter 0.3s ease-in-out;
   }
 }

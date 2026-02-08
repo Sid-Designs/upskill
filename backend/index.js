@@ -77,16 +77,31 @@ const profileRoutes = require("./interfaces/http/routes/profileRoutes");
 const chatStreamRoutes = require("./interfaces/http/routes/chatStreamRoutes");
 const coverLetterStreamRoutes = require("./interfaces/http/routes/coverLetterStreamRoutes");
 const paymentRoutes = require("./interfaces/http/routes/paymentRoutes");
+const roadmapRoutes = require("./interfaces/http/routes/roadmapRoutes");
+const roadmapStreamRoutes = require("./interfaces/http/routes/roadmapStreamRoutes");
 
 app.use("/api/user", userRoutes);
 app.use("/api/user", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/roadmap", roadmapRoutes);
 app.use(chatStreamRoutes);
 app.use(coverLetterStreamRoutes);
+app.use(roadmapStreamRoutes);
 app.use((err, req, res, next) => {
-  res.json({ error: err.message });
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  
+  if (statusCode === 500) {
+    console.error("[Error]", err.stack || err.message);
+  }
+
+  res.status(statusCode).json({
+    success: false,
+    error: message,
+    ...(process.env.NODE_ENV === "development" && statusCode === 500 && { stack: err.stack }),
+  });
 });
 
 // Server

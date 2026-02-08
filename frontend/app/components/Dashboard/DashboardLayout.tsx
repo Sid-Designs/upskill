@@ -12,7 +12,9 @@ import "../../../public/styles/dashboardLayout.css";
 import ChatBot from "../Tools/ChatBot";
 import History from "../Tools/History";
 import CoverLetter from "../Tools/CoverLetter";
+import Roadmap from "../Tools/Roadmap";
 import Credits from "../Tools/Credits";
+import { Menu } from "lucide-react";
 
 // Define valid routes
 const validRoutes = [
@@ -134,7 +136,7 @@ const DashboardLayout = () => {
       case "resume-builder":
         return <div>Resume Builder</div>;
       case "roadmap":
-        return <div>Roadmap</div>;
+        return <Roadmap />;
       case "cover-letter":
         return <CoverLetter />;
       case "credits":
@@ -151,15 +153,50 @@ const DashboardLayout = () => {
     }
   }, [currentRoute, router]);
 
+  const [sidebarOpenMobile, setSidebarOpenMobile] = useState(false);
+
+  const handleSidebarToggle = (isOpen: boolean) => {
+    setSidebarOpenMobile(isOpen);
+  };
+
+  const closeSidebar = () => {
+    setSidebarOpenMobile(false);
+  };
+
+  const openSidebar = () => {
+    setSidebarOpenMobile(true);
+  };
+
   return (
     <>
       <HideLayoutOnDashboard />
       <div className="dashLayout">
         <Sidebar
           selected={activeComponent}
-          onSelect={handleSidebarSelect}
+          onSelect={(cmp) => {
+            handleSidebarSelect(cmp);
+            // Auto-close sidebar on mobile after selecting an item
+            setSidebarOpenMobile(false);
+          }}
+          onSidebarToggle={handleSidebarToggle}
+          isOpenMobile={sidebarOpenMobile}
         />
-        <div className="dashboard">
+        {/* Blur overlay for mobile when sidebar is open */}
+        {sidebarOpenMobile && (
+          <div
+            className="sidebar-overlay"
+            onClick={closeSidebar}
+          />
+        )}
+        <div className={`dashboard ${sidebarOpenMobile ? 'dashboard-blurred' : ''}`}>
+          {/* Mobile hamburger menu button */}
+          <button
+            className="mobile-menu-btn"
+            onClick={openSidebar}
+            aria-label="Open menu"
+          >
+            <img src="/images/UpSkillLogoIcon.png" alt="U" className="h-6 w-6" />
+          </button>
           {renderComponent()}
         </div>
       </div>

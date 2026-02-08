@@ -9,10 +9,15 @@ const processAiMessage =
 const generateCoverLetter =
   require("./functions/generateCoverLetter");
 
+// Roadmap AI
+const generateRoadmap =
+  require("./functions/generateRoadmap");
+
 module.exports = serve({
   client: inngest,
   functions: [
     processAiMessage,
     generateCoverLetter,
+    generateRoadmap,
   ],
 });

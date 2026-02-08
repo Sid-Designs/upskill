@@ -10,6 +10,8 @@ import api from '@/lib/api';
 interface SidebarProps {
   selected: string;
   onSelect: (component: string) => void;
+  onSidebarToggle?: (isOpen: boolean) => void;
+  isOpenMobile?: boolean;
 }
 
 // Map URL slugs to sidebar item labels
@@ -38,7 +40,7 @@ const labelToSlugMap: Record<string, string> = {
   'Credits': 'credits'
 };
 
-const Sidebar = ({ selected, onSelect }: SidebarProps) => {
+const Sidebar = ({ selected, onSelect, onSidebarToggle, isOpenMobile }: SidebarProps) => {
   type UserProfile = {
     username: string;
     email: string;
@@ -63,6 +65,13 @@ const Sidebar = ({ selected, onSelect }: SidebarProps) => {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+
+  // Sync with external mobile control
+  useEffect(() => {
+    if (isOpenMobile !== undefined && isOpenMobile !== sidebarOpen) {
+      setSidebarOpen(isOpenMobile);
+    }
+  }, [isOpenMobile]);
   const [isHovering, setIsHovering] = useState(false);
   const [currentHoverY, setCurrentHoverY] = useState<number>(0);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -503,7 +512,9 @@ const Sidebar = ({ selected, onSelect }: SidebarProps) => {
     }
 
     // Toggle the state
-    setSidebarOpen(!sidebarOpen);
+    const newState = !sidebarOpen;
+    setSidebarOpen(newState);
+    onSidebarToggle?.(newState);
   };
 
   // Handle sidebar animation with GSAP - REMOVED CSS TRANSITION CONFLICT
@@ -604,7 +615,7 @@ const Sidebar = ({ selected, onSelect }: SidebarProps) => {
   return (
     <div
       ref={sidebarRef}
-      className={`flex justify-between items-center flex-col sidebar h-screen ${sidebarOpen ? 'sidebarOpen' : 'sidebarClose'}`}
+      className={`flex justify-between items-center flex-col sidebar h-screen ${sidebarOpen ? 'sidebarOpen' : 'sidebarClose'} sidebar-responsive`}
       style={{
         width: sidebarOpen ? '250px' : '80px'
       }}
