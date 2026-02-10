@@ -19,7 +19,6 @@ class VerifyUser {
     user.verify(token);
 
     await this.userRepository.save(user);
-    console.log("User verified:", user.id);
 
     // Generate JWT with user payload
     const newToken = generateToken({

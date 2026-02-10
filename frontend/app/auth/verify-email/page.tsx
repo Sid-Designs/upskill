@@ -24,7 +24,6 @@ const VerifyEmailPage = () => {
 		const checkStatus = async () => {
 			try {
 				const res = await api.get('/api/user/me')
-				console.log('Get me response', { status: res.status, data: res.data })
 				const user = (res.data as any)?.user
 
 				if (user?.status === 'active') {
@@ -56,7 +55,6 @@ const VerifyEmailPage = () => {
 			try {
 				const startedAt = performance.now()
 				const res = await api.get(`/api/user/verify-email?token=${encodeURIComponent(token)}`)
-				console.log('Verify email response', { status: res.status, data: res.data })
 				const apiError = (res.data as any)?.error
 				if (apiError) {
 					setError(apiError)

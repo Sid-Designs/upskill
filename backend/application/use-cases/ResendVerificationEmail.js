@@ -11,7 +11,6 @@ class ResendVerificationEmail {
 
     // Find User
     const user = await this.userRepository.findByEmail(email);
-    console.log("ResendVerificationEmail - found user:", user);
     if (!user) return;
 
 

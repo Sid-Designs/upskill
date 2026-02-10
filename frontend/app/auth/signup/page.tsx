@@ -27,7 +27,6 @@ const SignupPage = () => {
     setIsSubmitting(true)
     try {
       const res = await api.post('/api/user/register', { email, password })
-      console.log('Register response', { status: res.status, data: res.data })
 
       const apiError = (res.data as any)?.error
       if (apiError) {

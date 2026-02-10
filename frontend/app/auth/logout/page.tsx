@@ -15,7 +15,6 @@ const LogoutPage = () => {
 		const doLogout = async () => {
 			try {
 				const res = await api.post('/api/user/logout')
-				console.log('Logout response', { status: res.status, data: res.data })
 
 				const apiError = (res.data as any)?.error
 				if (apiError) {

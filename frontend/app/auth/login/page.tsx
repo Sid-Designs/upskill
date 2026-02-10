@@ -27,7 +27,6 @@ const LoginPage = () => {
     try {
       const res = await api.post('/api/user/login', { email, password })
       const data = await res.data;
-      console.log('Login response', data);
 
       const apiError = (res.data as any)?.error
       if (apiError) {

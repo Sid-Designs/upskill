@@ -1,17 +1,20 @@
+const mongoose = require("mongoose");
 const ProfileRepositories = require("../../domains/profile/repositories/ProfileRepositories");
 const Profile = require("../../domains/profile/entities/Profile");
 const ProfileModel = require("../db/models/Profile");
 
 class ProfileRepositoryImpl extends ProfileRepositories {
-  // Profile
+  // Get User Profile
   async getUserProfile(userId) {
-    const doc = await ProfileModel.findOne({ userId }).lean();
+    const objectUserId = new mongoose.Types.ObjectId(userId);
+
+    const doc = await ProfileModel.findOne({ userId: objectUserId }).lean();
 
     if (!doc) return null;
 
     return new Profile({
       id: doc._id.toString(),
-      userId: doc.userId,
+      userId: doc.userId.toString(),
       avatarUrl: doc.avatarUrl,
       username: doc.username,
       credits: doc.credits,
@@ -22,25 +25,31 @@ class ProfileRepositoryImpl extends ProfileRepositories {
     });
   }
 
-  // Create/Update Profile
+  // Create / Update Profile (UPSERT)
 
   async updateUserProfile(userId, profileData) {
+    const objectUserId = new mongoose.Types.ObjectId(userId);
+
+    const { credits, ...rest } = profileData;
+
     const updatePayload = {
-      ...profileData,
+      ...rest,
       updatedAt: new Date(),
     };
 
-    Object.keys(updatePayload).forEach(
-      (key) => updatePayload[key] === undefined && delete updatePayload[key]
-    );
+    Object.keys(updatePayload).forEach((key) => {
+      if (updatePayload[key] === undefined) {
+        delete updatePayload[key];
+      }
+    });
 
     const doc = await ProfileModel.findOneAndUpdate(
-      { userId },
+      { userId: objectUserId },
       {
         $set: updatePayload,
         $setOnInsert: {
-          userId,
-          credits: profileData.credits ?? 0,
+          userId: objectUserId,
+          credits: credits ?? 0,
           createdAt: new Date(),
         },
       },
@@ -50,9 +59,15 @@ class ProfileRepositoryImpl extends ProfileRepositories {
       }
     ).lean();
 
+    // Defensive guard
+    if (!doc || !doc.userId) {
+      throw new Error("Profile upsert failed: Missing userId");
+    }
+
+    // Map DB → Domain Entity
     return new Profile({
       id: doc._id.toString(),
-      userId: doc.userId,
+      userId: doc.userId.toString(),
       avatarUrl: doc.avatarUrl,
       username: doc.username,
       credits: doc.credits,
@@ -63,42 +78,43 @@ class ProfileRepositoryImpl extends ProfileRepositories {
     });
   }
 
+  // Deduct Credits (Usage / AI / Features)
   async deductCredits(userId, amount) {
+    const objectUserId = new mongoose.Types.ObjectId(userId);
+
     const updated = await ProfileModel.findOneAndUpdate(
       {
-        userId,
-        credits: { $gte: amount }, 
+        userId: objectUserId,
+        credits: { $gte: amount },
       },
       {
         $inc: { credits: -amount },
       },
       { new: true }
-    );
+    ).lean();
 
-    return updated; 
+    return updated;
   }
 
-  /**
-   * Add credits to user's profile.
-   * Used after successful payment verification.
-   * 
-   * @param {string} userId - User ID
-   * @param {number} amount - Credits to add
-   * @returns {Object} Updated profile document
-   */
+
+  // Add Credits (Payments / Admin Grants)
   async addCredits(userId, amount) {
+    const objectUserId = new mongoose.Types.ObjectId(userId);
+
     const updated = await ProfileModel.findOneAndUpdate(
-      { userId },
+      { userId: objectUserId },
       { $inc: { credits: amount } },
       { new: true }
-    );
+    ).lean();
 
     return updated;
   }
 
   // Delete Profile
   async deleteUserProfile(userId) {
-    await ProfileModel.deleteOne({ userId });
+    const objectUserId = new mongoose.Types.ObjectId(userId);
+
+    await ProfileModel.deleteOne({ userId: objectUserId });
     return true;
   }
 }

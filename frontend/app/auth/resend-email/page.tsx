@@ -21,7 +21,6 @@ const ResendEmailPage = () => {
     setIsSubmitting(true)
     try {
       const res = await api.post('/api/user/resend-verification', { email })
-      console.log('Resend verification response', { status: res.status, data: res.data })
       const apiError = (res.data as any)?.error
       if (apiError) {
         setErrorMessage(apiError)
