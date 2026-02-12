@@ -86,15 +86,15 @@ const navbarItems: NavbarItem[] = [
 const footerTagline = "Your AI career partner. Plan your path, optimize your resume, build your portfolio, and create compelling cover letters.";
 
 const websiteLinks: FooterLink[] = [
-  { name: "Blog", href: "#" },
-  { name: "Authors", href: "#" },
-  { name: "Categories", href: "#" },
+  { name: "Assistant", href: "/dashboard/history" },
+  { name: "Cover Letter", href: "/dashboard/cover-letter" },
+  { name: "Roadmap", href: "/dashboard/roadmap" },
 ];
 
 const legalLinks: FooterLink[] = [
-  { name: "Privacy Policy", href: "#" },
-  { name: "Terms of Service", href: "#" },
-  { name: "Cookie Policy", href: "#" },
+  { name: "Privacy Policy", href: "/privacy-policy" },
+  { name: "Terms of Service", href: "/terms" },
+  { name: "Cookie Policy", href: "/cookie-policy" },
 ];
 
 const socialLinks: SocialLink[] = [

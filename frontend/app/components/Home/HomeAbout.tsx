@@ -3,14 +3,22 @@
 import React, { useRef } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { CheckCircle } from "lucide-react";
-import { aiFeatures, stats, benefits } from '@/app/constants';
-
 
 const HomeAbout = () => {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLDivElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
   const imageRef = useRef<HTMLDivElement | null>(null);
+
+  // ✅ Updated benefits list – reflects your actual services
+  const benefits = [
+    "Personalized AI career roadmaps tailored to your goals",
+    "AI-generated cover letters and application materials",
+    "Industry-aligned capstone projects for real-world experience",
+    "Verified professional certification upon completion",
+    "Portfolio-ready projects to showcase to employers",
+    "Continuous skill gap analysis and smart recommendations",
+  ];
 
   useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -130,8 +138,8 @@ const HomeAbout = () => {
               </span>
             </h2>
             <p className="mx-auto mt-4 sm:mt-6 max-w-2xl text-base sm:text-lg lg:text-xl text-gray-600 leading-relaxed">
-              A smart career-building platform designed to personalize growth,
-              unlock opportunities, and make learning truly accessible.
+              A smart career‑building platform that uses AI to create personalized roadmaps,
+              generate application materials, and certify your skills through real‑world projects.
             </p>
           </div>
         </div>
@@ -143,16 +151,16 @@ const HomeAbout = () => {
             {/* Introduction */}
             <div className="space-y-4 about-content">
               <h3 className="text-2xl sm:text-3xl font-bold text-gray-900">
-                Revolutionizing Career Development <br /> With AI
+                AI‑Powered Career Guidance <br /> That Delivers Results
               </h3>
               <p className="text-lg text-gray-600 leading-relaxed">
-                UpSkill leverages cutting-edge artificial intelligence to create
-                personalized learning experiences that adapt to your unique
-                needs and career aspirations.
+                UpSkill combines cutting‑edge artificial intelligence with industry expertise
+                to give you a clear, actionable path to your dream job. No more guesswork—
+                just personalized roadmaps, tailored cover letters, and hands‑on capstone projects.
               </p>
               <p className="text-lg text-gray-600 leading-relaxed">
-                Our platform continuously evolves with the job market, ensuring
-                you're always learning the most relevant and in-demand skills.
+                Our platform adapts to your progress and the latest market trends, ensuring
+                you build the right skills and graduate with a portfolio that proves your value.
               </p>
             </div>
 
@@ -175,9 +183,9 @@ const HomeAbout = () => {
             {/* Main Image Container */}
             <div className="about-image relative rounded-2xl overflow-hidden shadow-2xl">
               <img
-                src="/api/placeholder/600/400"
-                alt="UpSkill AI Learning Platform"
-                className="w-full h-[450px] object-cover"
+                src="/images/AiBanner.jpeg"
+                alt="UpSkill AI career platform with roadmaps, cover letters, capstone projects and certification"
+                className="w-full h-[450px] object-cover-top"
               />
             </div>
           </div>

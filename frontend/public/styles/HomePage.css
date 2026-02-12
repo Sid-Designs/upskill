@@ -9,7 +9,7 @@
 
 .homeBox {
   border-radius: 20px;
-  height: 600px;
+  height: fit-content;
   background-color: var(--color-secondary);
 }
 
@@ -23,7 +23,7 @@
     padding-top: 20vh;
   }
   .homeBox {
-    height: 450px;
+    height: fit-content;
   }
   .homeCard{
     width: 70%;
@@ -34,7 +34,7 @@
     padding-top: 20vh;
   }
   .homeBox {
-    height: 300px;
+    height: fit-content;
   }
 }
 

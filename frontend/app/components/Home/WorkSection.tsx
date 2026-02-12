@@ -2,7 +2,7 @@
 
 import React, { useRef } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
-import { UserPlus, Rocket, GraduationCap, Sparkles } from "lucide-react";
+import { UserPlus, Rocket, Award, Sparkles } from "lucide-react"; // Changed GraduationCap → Award
 
 const WorkSection = () => {
   const sectionRef = useRef<HTMLDivElement | null>(null);
@@ -23,7 +23,7 @@ const WorkSection = () => {
     }
 
     // Header animation
-    gsap.fromTo(headerRef.current, 
+    gsap.fromTo(headerRef.current,
       {
         opacity: 0,
         y: 30,
@@ -43,7 +43,7 @@ const WorkSection = () => {
     );
 
     // Cards stagger animation
-    gsap.fromTo(".how-card", 
+    gsap.fromTo(".how-card",
       {
         opacity: 0,
         y: 60,
@@ -64,7 +64,7 @@ const WorkSection = () => {
     );
 
     // Icons animation
-    gsap.fromTo(".card-icon", 
+    gsap.fromTo(".card-icon",
       {
         scale: 0.8,
         opacity: 0,
@@ -130,7 +130,7 @@ const WorkSection = () => {
           ref={cardsRef}
           className="grid grid-cols-1 gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-3"
         >
-          {/* Card 1 */}
+          {/* Card 1: Profile */}
           <article
             className="how-card bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 lg:p-10 shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500/60 transition"
             tabIndex={0}
@@ -155,11 +155,11 @@ const WorkSection = () => {
             </div>
           </article>
 
-          {/* Card 2 */}
+          {/* Card 2: Smart Plan + Cover Letter */}
           <article
             className="how-card bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 lg:p-10 shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500/60 transition"
             tabIndex={0}
-            aria-label="Get a smart plan"
+            aria-label="Get a smart plan and cover letter"
           >
             <div className="flex h-full flex-col items-center text-center gap-4 sm:gap-5">
               <div className="card-icon flex size-14 sm:size-16 items-center justify-center rounded-2xl bg-purple-50 border border-purple-100">
@@ -174,32 +174,32 @@ const WorkSection = () => {
                 </h3>
                 <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
                   Receive a step-by-step learning plan with timelines,
-                  milestones, and resources tailored to your profile.
+                  milestones, resources, and an AI-generated cover letter tailored to your profile.
                 </p>
               </div>
             </div>
           </article>
 
-          {/* Card 3 */}
+          {/* Card 3: Capstone + Certification (UPDATED) */}
           <article
             className="how-card bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 lg:p-10 shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500/60 transition"
             tabIndex={0}
-            aria-label="Grow with guided practice"
+            aria-label="Earn certification with capstone projects"
           >
             <div className="flex h-full flex-col items-center text-center gap-4 sm:gap-5">
               <div className="card-icon flex size-14 sm:size-16 items-center justify-center rounded-2xl bg-green-50 border border-green-100">
-                <GraduationCap
+                <Award
                   className="size-7 sm:size-8 text-green-600"
                   aria-hidden="true"
                 />
               </div>
               <div className="max-w-sm">
                 <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 mb-1.5 sm:mb-2">
-                  Grow with Guided Practice
+                  Build & Certify
                 </h3>
                 <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
-                  Practice with quizzes, projects, and feedback. Track progress
-                  and level up your skills continuously.
+                  Complete industry-aligned capstone projects, earn verified certificates,
+                  and build a standout portfolio that showcases your expertise to employers.
                 </p>
               </div>
             </div>

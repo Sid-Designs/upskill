@@ -165,26 +165,7 @@ const MobileNavIcon = ({ isAuthenticated, accountMenuItems }: MobileNavIconProps
                 </Link>
               ))}
             </div>
-            {!isAuthenticated && (
-              <div className="mt-3 space-y-2">
-                <Link
-                  href="/auth/login"
-                  onClick={handleLinkClick}
-                  className="account-link-item">
-                  <div className="account-link-content">
-                    <span className="account-link-text">Login</span>
-                  </div>
-                </Link>
-                <Link
-                  href="/auth/signup"
-                  onClick={handleLinkClick}
-                  className="account-link-item">
-                  <div className="account-link-content">
-                    <span className="account-link-text">Sign Up</span>
-                  </div>
-                </Link>
-              </div>
-            )}
+
           </div>
         </div>
       </div>

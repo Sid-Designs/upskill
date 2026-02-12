@@ -1,119 +1,96 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useRef } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import {
+  Map,
+  FileText,
+  Award,
+  Briefcase,
+  Target,
   Sparkles,
-  Bot,
-  Users,
-  Database,
-  Code,
-  Palette,
-  Cloud,
-  Smartphone,
+  GraduationCap,
+  PenTool,
 } from "lucide-react";
 
-type ServiceCategory = "all" | "workspace" | "ai-tools";
-
-interface ServiceItem {
-  id: number;
-  title: string;
-  description: string;
-  category: ServiceCategory[];
-  icon: React.ComponentType<any>;
-  color: string;
-  features: string[];
-}
-
 const HomeService = () => {
-  const [selectedCategory, setSelectedCategory] = useState<ServiceCategory>("all");
-  const [isAnimating, setIsAnimating] = useState(false);
-
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLDivElement | null>(null);
-  const filterRef = useRef<HTMLDivElement | null>(null);
   const gridRef = useRef<HTMLDivElement | null>(null);
 
-  const services: ServiceItem[] = [
+  // ✅ Your actual services – clean, accurate, and ready to impress
+  const services = [
     {
       id: 1,
-      title: "AI Assistant Pro",
+      title: "AI Career Roadmap",
       description:
-        "Intelligent AI assistant that helps you automate tasks and make data-driven decisions.",
-      category: ["ai-tools", "workspace"],
-      icon: Bot,
-      color: "from-purple-500 to-pink-500",
-      features: ["Natural Language Processing", "Task Automation", "Data Analysis"],
+        "Get a personalized step-by-step learning path tailored to your skills, goals, and target role.",
+      icon: Map,
+      color: "from-blue-600 to-indigo-600",
+      features: ["Skill gap analysis", "Timeline & milestones", "Resource recommendations"],
     },
     {
       id: 2,
-      title: "Smart Workspace",
+      title: "Cover Letter Generator",
       description:
-        "Collaborative workspace with integrated tools for team productivity and project management.",
-      category: ["workspace"],
-      icon: Users,
-      color: "from-blue-500 to-cyan-500",
-      features: ["Real-time Collaboration", "Project Tracking", "Team Management"],
+        "Generate professional, AI-crafted cover letters that highlight your strengths and match job descriptions.",
+      icon: FileText,
+      color: "from-purple-600 to-pink-600",
+      features: ["Job-specific tailoring", "Multiple tone options", "Export to PDF"],
     },
     {
       id: 3,
-      title: "Data Analytics Suite",
+      title: "Capstone Project Studio",
       description:
-        "Advanced analytics platform with machine learning capabilities for business intelligence.",
-      category: ["ai-tools"],
-      icon: Database,
-      color: "from-green-500 to-emerald-500",
-      features: ["Predictive Analytics", "Data Visualization", "ML Models"],
+        "Build real‑world, industry‑aligned projects that demonstrate your skills and become portfolio‑ready.",
+      icon: Briefcase,
+      color: "from-green-600 to-emerald-600",
+      features: ["Guided project roadmap", "Code reviews", "Portfolio integration"],
     },
     {
       id: 4,
-      title: "Code Generator AI",
+      title: "Professional Certification",
       description:
-        "AI-powered code generation and review system for developers and teams.",
-      category: ["ai-tools"],
-      icon: Code,
-      color: "from-orange-500 to-red-500",
-      features: ["Code Completion", "Bug Detection", "Auto Documentation"],
+        "Earn verified certificates upon completion – shareable on LinkedIn and trusted by employers.",
+      icon: Award,
+      color: "from-yellow-600 to-orange-600",
+      features: ["Blockchain‑verified", "Employer‑recognized", "Lifetime access"],
     },
     {
       id: 5,
-      title: "Design Studio",
+      title: "Skill Gap Analysis",
       description:
-        "Creative suite with AI-enhanced design tools and collaboration features.",
-      category: ["workspace"],
-      icon: Palette,
-      color: "from-pink-500 to-rose-500",
-      features: ["AI Design Assistant", "Prototyping", "Team Collaboration"],
+        "AI‑powered assessment that identifies missing skills and suggests precise learning paths.",
+      icon: Target,
+      color: "from-red-600 to-rose-600",
+      features: ["Real‑time market data", "Personalized recommendations", "Progress tracking"],
     },
     {
       id: 6,
-      title: "Cloud Platform",
+      title: "Portfolio Builder",
       description:
-        "Scalable cloud infrastructure with AI optimization and automated deployment.",
-      category: ["workspace", "ai-tools"],
-      icon: Cloud,
-      color: "from-indigo-500 to-purple-500",
-      features: ["Auto Scaling", "AI Optimization", "Secure Deployment"],
+        "Transform your capstone projects into a stunning portfolio that stands out to recruiters.",
+      icon: PenTool,
+      color: "from-indigo-600 to-blue-600",
+      features: ["Customizable templates", "Live demo hosting", "Shareable link"],
     },
     {
       id: 7,
-      title: "Mobile AI SDK",
+      title: "Interview Preparation",
       description:
-        "Mobile development toolkit with pre-built AI models and optimization tools.",
-      category: ["ai-tools"],
-      icon: Smartphone,
-      color: "from-cyan-500 to-blue-500",
-      features: ["Pre-trained Models", "On-device AI", "Performance Optimization"],
+        "Practice with AI‑generated mock interviews tailored to your target companies and roles.",
+      icon: GraduationCap,
+      color: "from-teal-600 to-cyan-600",
+      features: ["Role‑specific questions", "Feedback & scoring", "Behavioral & technical"],
     },
     {
       id: 8,
-      title: "Team Analytics",
+      title: "Career Coaching",
       description:
-        "Comprehensive analytics for team performance and productivity insights.",
-      category: ["workspace"],
+        "One‑on‑one mentorship sessions with industry experts to refine your strategy and confidence.",
       icon: Sparkles,
-      color: "from-yellow-500 to-orange-500",
-      features: ["Performance Metrics", "Productivity Insights", "Team Analytics"],
+      color: "from-violet-600 to-purple-600",
+      features: ["Resume reviews", "Networking tips", "Offer negotiation"],
     },
   ];
 
@@ -123,7 +100,7 @@ const HomeService = () => {
 
       const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (prefersReduced) {
-        gsap.set([".service-header", ".filter-buttons", ".service-card"], {
+        gsap.set([".service-header", ".service-card"], {
           opacity: 1,
           y: 0,
           scale: 1,
@@ -131,10 +108,9 @@ const HomeService = () => {
         return;
       }
 
-      // Smoother defaults for all tweens in this scope
       gsap.defaults({ ease: "power3.out" });
 
-      // Header animation (faster & softer)
+      // Header animation
       gsap.fromTo(
         ".service-header",
         { opacity: 0, y: 24, force3D: true },
@@ -150,23 +126,7 @@ const HomeService = () => {
         }
       );
 
-      // Filter buttons animation
-      gsap.fromTo(
-        ".filter-buttons",
-        { opacity: 0, y: 16, force3D: true },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.4,
-          scrollTrigger: {
-            trigger: filterRef.current,
-            start: "top 85%",
-            toggleActions: "play none none reverse",
-          },
-        }
-      );
-
-      // Initial service cards animation (snappier)
+      // Cards stagger animation
       gsap.fromTo(
         ".service-card",
         { opacity: 0, y: 36, scale: 0.96, force3D: true },
@@ -188,66 +148,6 @@ const HomeService = () => {
     { scope: sectionRef }
   );
 
-  const filteredServices =
-    selectedCategory === "all"
-      ? services
-      : services.filter((service) => service.category.includes(selectedCategory));
-
-  const handleCategorySelect = async (category: ServiceCategory) => {
-    if (isAnimating || category === selectedCategory) return;
-    setIsAnimating(true);
-
-    const gridEl = gridRef.current;
-    if (!gridEl) return;
-
-    // Animate OUT current cards (quick & clean)
-    const currentCards = Array.from(gridEl.querySelectorAll(".service-card"));
-    await gsap.to(currentCards, {
-      opacity: 0,
-      y: -14,
-      scale: 0.97,
-      duration: 0.25,
-      stagger: 0.04,
-      ease: "power2.inOut",
-      force3D: true,
-    });
-
-    // Switch category
-    setSelectedCategory(category);
-
-    // Give React a tick to paint the new DOM
-    await new Promise((r) => setTimeout(r, 0));
-
-    // Animate IN new cards
-    const newCards = Array.from(gridEl.querySelectorAll(".service-card"));
-    gsap.fromTo(
-      newCards,
-      { opacity: 0, y: 28, scale: 0.96, force3D: true },
-      {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.4,
-        ease: "expo.out",
-        stagger: 0.06,
-        onComplete: () => setIsAnimating(false),
-      }
-    );
-  };
-
-  const getCategoryTitle = () => {
-    switch (selectedCategory) {
-      case "all":
-        return "All Services";
-      case "workspace":
-        return "Workspace Tools";
-      case "ai-tools":
-        return "AI Tools";
-      default:
-        return "Services";
-    }
-  };
-
   return (
     <div
       ref={sectionRef}
@@ -255,85 +155,49 @@ const HomeService = () => {
       id="services"
     >
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div ref={headerRef} className="text-center mb-12">
+        {/* Header – completely rewritten to match your brand */}
+        <div ref={headerRef} className="text-center mb-16">
           <div className="service-header">
             <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
-              Our{" "}
-              <span className="bg-gradient-to-r bg-gray-900 bg-clip-text text-transparent">
-                Services
-              </span>
+              Career‑Building Services
+
             </h2>
             <p className="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
-              Discover powerful tools and solutions to accelerate your workflow
-              and boost productivity
+              Everything you need to go from where you are to where you want to be—
+              powered by AI and built for results.
             </p>
           </div>
         </div>
 
-        {/* Filter Buttons */}
-        <div
-          ref={filterRef}
-          className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8"
-        >
-          <div className={`filter-buttons flex flex-wrap gap-3 mx-auto w-full center`}>
-            {[
-              { key: "all", label: "All Services" },
-              { key: "workspace", label: "Workspace" },
-              { key: "ai-tools", label: "AI Tools" },
-            ].map((category) => (
-              <button
-                key={category.key}
-                onClick={() => handleCategorySelect(category.key as ServiceCategory)}
-                disabled={isAnimating}
-                className={`cursor-pointer px-6 py-3 rounded-2xl font-semibold transition-all duration-200 transform hover:scale-[1.03] disabled:opacity-50 disabled:cursor-not-allowed ${
-                  selectedCategory === category.key
-                    ? "bg-gradient-to-r bg-[var(--color-primary)] text-white shadow-lg shadow-blue-500/25"
-                    : "bg-white text-gray-700 border border-gray-200 hover:border-gray-300 hover:shadow-lg"
-                }`}
-              >
-                {category.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Current Category Title */}
-        <div className="text-center mb-8">
-          <h3 className="text-2xl font-bold text-gray-900">
-            {getCategoryTitle()}
-            <span className="text-gray-400 ml-2">({filteredServices.length})</span>
-          </h3>
-        </div>
-
-        {/* Services Grid */}
+        {/* Services Grid – clean, filter‑free, 8 core offerings */}
         <div
           ref={gridRef}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
         >
-          {filteredServices.map((service) => (
+          {services.map((service) => (
             <div
               key={service.id}
               className="service-card group bg-white rounded-3xl border border-gray-200 p-6 shadow-sm hover:shadow-2xl transition-all duration-300 transform-gpu hover:-translate-y-2"
               style={{ willChange: "transform, opacity" }}
             >
-              {/* Icon */}
+              {/* Icon with brand‑consistent gradient */}
               <div
                 className={`inline-flex p-3 rounded-2xl bg-gradient-to-r ${service.color} text-white shadow-lg mb-4`}
               >
                 <service.icon className="size-6" />
               </div>
 
-              {/* Content */}
+              {/* Title */}
               <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-gray-700 transition-colors">
                 {service.title}
               </h3>
 
-              <p className="text-gray-600 mb-4 leading-relaxed">
+              {/* Description */}
+              <p className="text-gray-600 mb-4 leading-relaxed text-sm">
                 {service.description}
               </p>
 
-              {/* Features */}
+              {/* Feature list */}
               <div className="space-y-2">
                 {service.features.map((feature, index) => (
                   <div key={index} className="flex items-center gap-2 text-sm text-gray-500">
@@ -345,17 +209,6 @@ const HomeService = () => {
             </div>
           ))}
         </div>
-
-        {/* Empty State */}
-        {filteredServices.length === 0 && (
-          <div className="text-center py-12">
-            <div className="size-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-              <Sparkles className="size-10 text-gray-400" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No services found</h3>
-            <p className="text-gray-600">We're working on new services in this category.</p>
-          </div>
-        )}
       </div>
     </div>
   );
