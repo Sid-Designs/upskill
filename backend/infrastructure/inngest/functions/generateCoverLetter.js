@@ -32,7 +32,12 @@ module.exports = inngest.createFunction(
 
     /* 1️⃣ Load cover letter */
     const coverLetter = await step.run("load-cover-letter", async () => {
-      return coverLetterRepo.findById(coverLetterId);
+      const result = await coverLetterRepo.findById(coverLetterId);
+      console.log("[DEBUG] coverLetter loaded:", result);
+      // Check prototype
+      const CoverLetterClass = require("../../../domains/coverLetter/entities/CoverLetter");
+      console.log("[DEBUG] Is instance of CoverLetter:", result instanceof CoverLetterClass);
+      return result;
     });
     
     if (!coverLetter) {
@@ -95,8 +100,14 @@ module.exports = inngest.createFunction(
 
     /* 6️⃣ Save AI result */
     await step.run("save-result", async () => {
-      coverLetter.complete(aiResult.text, aiResult.provider);
-      await coverLetterRepo.update(coverLetter);
+      // Ensure coverLetter is a proper instance
+      const CoverLetterClass = require("../../../domains/coverLetter/entities/CoverLetter");
+      let coverLetterInstance = coverLetter;
+      if (!(coverLetter instanceof CoverLetterClass)) {
+        coverLetterInstance = new CoverLetterClass({ ...coverLetter });
+      }
+      coverLetterInstance.complete(aiResult.text, aiResult.provider);
+      await coverLetterRepo.update(coverLetterInstance);
     });
 
     /* 7️⃣ Deduct credits */
